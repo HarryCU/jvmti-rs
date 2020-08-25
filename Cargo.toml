@@ -1,0 +1,29 @@
+[package]
+authors = ["HarryCU <292350862@qq.com>"]
+description = "Rust bindings to the JVMTI"
+name = "jvmti"
+keywords = [
+    "ffi",
+    "jvmti",
+    "java",
+]
+categories = ["api-bindings"]
+license = "Apache-2.0"
+version = "0.17.0"
+edition = "2018"
+
+[dependencies]
+jni = "0.17.0"
+jni-sys = "0.3.0"
+thiserror = "1.0.20"
+lazy_static = "1.4.0"
+log = "0.4.11"
+cesu8 = "1.1.0"
+
+[dependencies.error-chain]
+default-features = false
+version = "0.12.4"
+
+[features]
+backtrace = ["error-chain/backtrace"]
+default = ["backtrace"]

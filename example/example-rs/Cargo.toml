@@ -1,0 +1,37 @@
+[package]
+authors = ["HarryCU <292350862@qq.com>"]
+description = "Rust bindings to the JVMTI Example"
+name = "example-rs"
+keywords = [
+    "ffi",
+    "jvmti",
+    "java",
+    "example"
+]
+categories = ["api-bindings"]
+license = "Apache-2.0"
+version = "0.17.0"
+edition = "2018"
+
+[dependencies]
+jni = "0.17.0"
+jni-sys = "0.3.0"
+jvmti = { path = "../../" }
+log = "0.4.11"
+log4rs = "0.13.0"
+
+[lib]
+name = "libjvmti_example"
+crate-type = ["cdylib"]
+
+[profile.dev]
+panic = 'unwind'
+
+[profile.release]
+opt-level = 3
+debug = false
+rpath = false
+lto = "fat"
+debug-assertions = false
+codegen-units = 1
+panic = 'unwind'
