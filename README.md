@@ -1,5 +1,5 @@
 
-# JVMTI Bindings for Rust (Not completed!)
+# JVMTI Bindings for Rust
 
 This project provides complete JVMTI bindings for Rust 
 
