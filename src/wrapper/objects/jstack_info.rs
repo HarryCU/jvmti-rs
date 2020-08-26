@@ -1,7 +1,5 @@
 use crate::sys::{JMethodID, jvmtiFrameInfo, jvmtiStackInfo};
-use crate::wrapper::{JThreadID, JLocation, slice_raw, MutObjectArrayBuilder, Builder};
-use jni_sys::jint;
-use std::marker::PhantomData;
+use crate::wrapper::{JThreadID, JLocation, MutObjectArrayBuilder, Builder};
 
 #[derive(Clone)]
 pub struct JStackInfo<'a> {

@@ -5,7 +5,6 @@ use error_chain::*;
 use crate::sys;
 use crate::sys::jvmtiError;
 use crate::wrapper::JvmtiError;
-use cesu8::Cesu8DecodingError;
 
 // see https://github.com/jni-rs/jni-rs/blob/master/src/wrapper/errors.rs
 error_chain! {

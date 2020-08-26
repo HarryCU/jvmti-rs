@@ -1,5 +1,5 @@
 use crate::wrapper::JLocation;
-use crate::sys::{jint, jvmtiLineNumberEntry};
+use crate::sys::jvmtiLineNumberEntry;
 
 #[derive(Copy, Clone)]
 pub struct JLineNumberEntry<'a> {

@@ -1,13 +1,10 @@
-use log::{debug, error};
+use log::error;
 use std::os::raw::{c_void, c_char, c_uchar};
-use std::{ptr, panic};
-use std::sync::Mutex;
+use std::panic;
 
 use crate::sys;
 use crate::sys::{jthread, jobject, jclass, jlong, jmethodID, jlocation, jint, jboolean, jvmtiAddrLocationMap, jvalue, jfieldID, jmemory};
 use crate::wrapper::*;
-use jni::JNIEnv;
-use std::any::Any;
 
 static mut EVENT_CALL_TABLE: EventHandlers = empty_event_handlers!();
 

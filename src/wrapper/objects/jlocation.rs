@@ -24,6 +24,12 @@ impl<'a> From<JLocation<'a>> for jlocation {
     }
 }
 
+impl<'a> From<&JLocation<'a>> for jlocation {
+    fn from(location: &JLocation<'a>) -> Self {
+        location.internal
+    }
+}
+
 impl<'a> ::std::ops::Deref for JLocation<'a> {
     type Target = jlocation;
 

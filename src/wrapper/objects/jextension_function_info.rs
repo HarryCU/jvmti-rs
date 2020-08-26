@@ -1,5 +1,4 @@
 use crate::sys::{jvmtiExtensionFunctionInfo, jvmtiExtensionFunction, jvmtiParamInfo, jvmtiError};
-use std::marker::PhantomData;
 use crate::wrapper::{JParamInfo, JvmtiError, MutObjectArrayBuilder, stringify, Builder};
 
 #[derive(Debug)]

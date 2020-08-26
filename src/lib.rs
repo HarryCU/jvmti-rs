@@ -40,9 +40,8 @@ pub use crate::wrapper::jvmti_event_vm_init_handler;
 pub use crate::wrapper::jvmti_event_vm_object_alloc_handler;
 pub use crate::wrapper::jvmti_event_vm_start_handler;
 
-use jni::{JavaVM, JNIEnv};
-use crate::wrapper::{runner, EventAdjuster, EventHandlers, JVMTIEnv, JThreadID, JCapabilities, JEventManager};
-use crate::sys::JClass;
+use crate::wrapper::{runner, JCapabilities, JEventManager};
+use jni::JavaVM;
 
 use log::{info, error};
 
@@ -51,7 +50,7 @@ pub fn agent_on_load(vm: &JavaVM, options: &Option<String>, initialize: fn(&mut 
     info!("Agent options: {}", options.as_ref().unwrap_or(&"".to_string()));
 
     match runner::do_on_load(vm, options, initialize) {
-        Ok(r) => 0,
+        Ok(_) => 0,
         Err(e) => {
             error!("Failed to load agent: {}", e);
             return -1;
@@ -59,8 +58,6 @@ pub fn agent_on_load(vm: &JavaVM, options: &Option<String>, initialize: fn(&mut 
     }
 }
 
-pub fn agent_on_unload(vm: &JavaVM) {
-    info!("Agent unloading...");
-
+pub fn agent_on_unload(_vm: &JavaVM) {
     info!("Agent unloaded");
 }

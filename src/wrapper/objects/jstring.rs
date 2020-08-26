@@ -1,15 +1,8 @@
-use thiserror::Error;
-use std::os::raw::{c_char, c_uchar};
+use std::os::raw::c_char;
 use crate::wrapper::*;
-use std::{str, ptr};
-use std::ffi::CStr;
-use std::string::FromUtf8Error;
-use jni_sys::jlong;
-use std::marker::PhantomData;
-use std::borrow::{Borrow, Cow};
-use crate::sys::{JNIString, jmemory, JNIStr};
-use cesu8::from_java_cesu8;
-use log::{debug, error};
+use std::str;
+use std::borrow::Cow;
+use crate::sys::jmemory;
 
 pub struct JString<'a> {
     ptr: *mut c_char,
@@ -26,6 +19,12 @@ impl<'a> JString<'a> {
 
     pub fn as_ptr(&mut self) -> *mut c_char {
         self.ptr
+    }
+
+    pub fn deallocate(&self) {
+        if !self.ptr.is_null() {
+            self.env.deallocate(self).unwrap()
+        }
     }
 }
 
@@ -58,14 +57,12 @@ impl<'a> From<JString<'a>> for String {
 
 impl<'a> Drop for JString<'a> {
     fn drop(&mut self) {
-        if !self.ptr.is_null() {
-            self.env.deallocate(self).unwrap()
-        }
+        self.deallocate()
     }
 }
 
 impl<'a> JDeallocate<'a> for JString<'a> {
-    fn as_ptr(&self) -> jmemory {
+    fn as_deallocate_ptr(&self) -> jmemory {
         self.ptr as jmemory
     }
 }

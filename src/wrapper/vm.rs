@@ -1,15 +1,10 @@
 pub use jni::JavaVM;
 use crate::wrapper::{
     errors::*,
-    enums::*,
-    objects::*,
-    utils::*,
-    builder::*,
     JVMTIEnv,
 };
 use std::ptr;
 use crate::sys;
-use log::{warn,debug};
 
 pub trait Jvmti {
     fn get_jvmti_env(&self) -> Result<JVMTIEnv>;

@@ -1,9 +1,7 @@
 use crate::wrapper::{JMemoryAllocate, JVMTIEnv};
 use std::marker::PhantomData;
-use std::os::raw::c_uchar;
 use crate::sys::{jint, jmemory};
 use jni_sys::jlong;
-use std::borrow::Borrow;
 
 pub struct JConstantPool<'a> {
     lifetime: PhantomData<&'a ()>,
@@ -29,6 +27,7 @@ impl<'a> JConstantPool<'a> {
 
 impl<'a> Drop for JConstantPool<'a> {
     fn drop(&mut self) {
-        std::mem::drop((&mut self.bytes))
+        let bytes = &mut self.bytes;
+        bytes.deallocate()
     }
 }

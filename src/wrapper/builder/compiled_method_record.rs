@@ -1,12 +1,12 @@
 use std::ffi::c_void;
-use crate::wrapper::{JCompiledMethodLoadRecord, slice_raw, JCompiledMethodLoadRecordStackFrame, JCompiledMethodLoadRecordStackInfo, ObjectArrayBuilder, MutObjectArrayBuilder, Builder, JVMTIEnv};
-use crate::sys::{jvmtiCompiledMethodLoadRecordHeader, JVMTI_CMLR_MAJOR_VERSION, JVMTI_CMLR_MINOR_VERSION, JVMTI_CMLR_DUMMY, JVMTI_CMLR_INLINE_INFO, jvmtiCompiledMethodLoadInlineRecord, PCStackInfo, jvmtiCompiledMethodLoadDummyRecord};
-use jni_sys::{jint, jmethodID};
-use core::slice;
+use crate::wrapper::{JCompiledMethodLoadRecord, MutObjectArrayBuilder, Builder};
+use crate::sys::{jvmtiCompiledMethodLoadRecordHeader, JVMTI_CMLR_MAJOR_VERSION, JVMTI_CMLR_MINOR_VERSION,
+                 JVMTI_CMLR_DUMMY, JVMTI_CMLR_INLINE_INFO, jvmtiCompiledMethodLoadInlineRecord,
+                 PCStackInfo, jvmtiCompiledMethodLoadDummyRecord};
 use log::debug;
 
 // see https://github.com/rel-eng/rvmti/blob/master/src/rvmti.rs#L1376
-pub(crate) fn parse_compiled_method_load_record<'a>(compile_info: *const c_void) -> Option<Vec<JCompiledMethodLoadRecord<'a>>> {
+pub fn parse_compiled_method_load_record<'a>(compile_info: *const c_void) -> Option<Vec<JCompiledMethodLoadRecord<'a>>> {
     unsafe {
         if compile_info.is_null() {
             return None;

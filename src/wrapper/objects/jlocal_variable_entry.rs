@@ -1,6 +1,6 @@
 use crate::wrapper::*;
 
-use crate::sys::{jint, jvmtiLocalVariableEntry};
+use crate::sys::jvmtiLocalVariableEntry;
 
 #[derive(Clone)]
 pub struct JLocalVariableEntry<'a> {

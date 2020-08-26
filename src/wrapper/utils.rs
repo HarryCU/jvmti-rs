@@ -1,7 +1,5 @@
 use core::slice;
 use crate::sys;
-use std::ptr;
-use log::error;
 use crate::wrapper::to_modified_utf8;
 use crate::sys::jboolean;
 use std::os::raw::c_char;

@@ -1,12 +1,5 @@
-use thiserror::Error;
-use std::os::raw::{c_char, c_uchar};
 use crate::wrapper::{JVMTIEnv, JDeallocate};
-use std::str;
-use std::ffi::CStr;
-use std::string::FromUtf8Error;
 use jni_sys::jlong;
-use std::marker::PhantomData;
-use std::borrow::Borrow;
 use crate::sys::jmemory;
 
 #[derive(Clone)]
@@ -26,18 +19,22 @@ impl<'a> JMemoryAllocate<'a> {
             env,
         }
     }
-}
 
-impl<'a> Drop for JMemoryAllocate<'a> {
-    fn drop(&mut self) {
+    pub fn deallocate(&self) {
         if !self.ptr.is_null() {
             self.env.deallocate(self).unwrap()
         }
     }
 }
 
+impl<'a> Drop for JMemoryAllocate<'a> {
+    fn drop(&mut self) {
+        self.deallocate()
+    }
+}
+
 impl<'a> JDeallocate<'a> for JMemoryAllocate<'a> {
-    fn as_ptr(&self) -> jmemory {
+    fn as_deallocate_ptr(&self) -> jmemory {
         self.ptr
     }
 }

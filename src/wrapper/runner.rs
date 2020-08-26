@@ -1,7 +1,5 @@
 use crate::wrapper::*;
-use thiserror::Error;
-use crate::perf;
-use log::{warn, debug};
+use log::debug;
 use jni::JavaVM;
 
 pub fn do_on_load<'a>(vm: &JavaVM, options: &Option<String>, initialize: fn(&mut JCapabilities, &mut JEventManager)) -> Result<()> {

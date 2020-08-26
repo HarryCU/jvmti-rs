@@ -1,4 +1,4 @@
-use cesu8::{from_java_cesu8, Cesu8DecodingError};
+use cesu8::from_java_cesu8;
 use log::error;
 use std::borrow::Cow;
 use std::os::raw::c_char;

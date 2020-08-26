@@ -1,4 +1,3 @@
-use std::marker::PhantomData;
 use crate::wrapper::JLocation;
 use crate::sys::{jvmtiFrameInfo, JMethodID};
 

@@ -1,7 +1,7 @@
 use crate::wrapper::{JThreadID, Builder, slice_raw, MutObjectArrayBuilder,
                      JThreadGroupID, JCompiledMethodLoadRecordStackInfo,
                      JCompiledMethodLoadRecordStackFrame, JLineNumberEntry, JLocalVariableEntry,
-                     JVMTIEnv, JvmtiError, JFrameInfo, WithJvmtiEvnBuilder, JStackInfo, JMonitorUsage, JMonitorStackDepthInfo,
+                     JVMTIEnv, JvmtiError, JFrameInfo, WithJvmtiEvnBuilder, JStackInfo, JMonitorStackDepthInfo,
                      JParamInfo, JExtensionEventInfo, JExtensionFunctionInfo};
 use crate::sys;
 use crate::sys::{JMethodID, JFieldID, JClass, jvmtiLocalVariableEntry, JObject};

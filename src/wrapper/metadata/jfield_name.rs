@@ -1,6 +1,4 @@
 use crate::wrapper::*;
-use std::marker::PhantomData;
-use crate::sys::JFieldID;
 
 #[derive(Clone, Debug)]
 pub struct JFieldName<'a> {

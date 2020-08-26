@@ -11,9 +11,11 @@ mod utils;
 mod event;
 mod decoder;
 mod metadata;
+mod jvmtifns;
 
 pub mod runner;
 
+pub use jvmtifns::*;
 pub use vm::*;
 pub use enums::*;
 pub use jvmtienv::*;

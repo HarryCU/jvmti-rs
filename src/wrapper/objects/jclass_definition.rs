@@ -31,6 +31,7 @@ impl<'a> From<&JClassDefinition<'a>> for jvmtiClassDefinition {
 
 impl<'a> Drop for JClassDefinition<'a> {
     fn drop(&mut self) {
-        std::mem::drop((&mut self.class_bytes))
+        let bytes = &mut self.class_bytes;
+        bytes.deallocate()
     }
 }

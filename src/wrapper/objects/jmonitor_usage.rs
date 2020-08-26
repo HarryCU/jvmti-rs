@@ -1,5 +1,4 @@
-use crate::wrapper::{JThreadID, slice_raw, MutObjectArrayBuilder, Builder};
-use std::marker::PhantomData;
+use crate::wrapper::{JThreadID, MutObjectArrayBuilder, Builder};
 use crate::sys;
 use crate::sys::jthread;
 
