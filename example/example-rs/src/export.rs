@@ -5,12 +5,12 @@ use jvmti::wrapper::*;
 use std::panic;
 use log::{debug, warn, error};
 use std::ffi::c_void;
-use jni::{JavaVM, JNIEnv};
+use jni::JNIEnv;
 use jni_sys::jint;
 use std::string::String;
 use std::sync::Once;
 
-fn from_platform(input: *const c_char) -> Result<Option<String>> {
+fn from_platform(_input: *const c_char) -> Result<Option<String>> {
     Ok(None)
 }
 
@@ -94,6 +94,10 @@ fn compiled_method_load(event: CompiledMethodLoadEvent) {
     }
 }
 
+fn vm_object_alloc(event: VmObjectAllocEvent) {
+    debug!("vm_object_alloc => {}", event.size)
+}
+
 static ONCE: Once = Once::new();
 
 fn class_load(event: ClassLoadEvent) {
@@ -120,20 +124,17 @@ fn class_load(event: ClassLoadEvent) {
     })
 }
 
-fn initialize(capabilities: &mut JCapabilities, event_manager: &mut JEventManager) {
-    capabilities.can_generate_all_class_hook_events();
-    capabilities.can_tag_objects();
-    capabilities.can_generate_object_free_events();
-    capabilities.can_get_source_file_name();
-    capabilities.can_get_line_numbers();
-    capabilities.can_generate_vm_object_alloc_events();
-    capabilities.can_generate_compiled_method_load_events();
-    capabilities.can_generate_method_entry_events();
+fn initialize(event_manager: &mut JEventManager) {
+    event_manager.get_capabilities().can_generate_all_class_hook_events();
+    event_manager.get_capabilities().can_tag_objects();
+    event_manager.get_capabilities().can_get_source_file_name();
+    event_manager.get_capabilities().can_get_line_numbers();
 
     // event_manager.compiled_method_load_enabled(None);
     // event_manager.dynamic_code_generated_enabled(None);
     // event_manager.class_prepare_enabled(None);
     // event_manager.method_entry_enabled(None);
+    event_manager.vm_object_alloc_enabled(None);
     event_manager.vm_start_enabled();
     event_manager.class_load_enabled(None);
 
@@ -143,6 +144,7 @@ fn initialize(capabilities: &mut JCapabilities, event_manager: &mut JEventManage
     EventAdjuster::on_method_entry(Some(method_entry));
     EventAdjuster::on_compiled_method_load(Some(compiled_method_load));
     EventAdjuster::on_class_load(Some(class_load));
+    EventAdjuster::on_vm_object_alloc(Some(vm_object_alloc));
 }
 
 #[allow(non_snake_case)]

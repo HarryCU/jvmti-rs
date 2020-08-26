@@ -2,21 +2,17 @@ use crate::wrapper::*;
 use log::debug;
 use jni::JavaVM;
 
-pub fn do_on_load<'a>(vm: &JavaVM, options: &Option<String>, initialize: fn(&mut JCapabilities, &mut JEventManager)) -> Result<()> {
-    let mut jvmti = vm.get_jvmti_env()?;
+pub fn do_on_load<'a>(vm: &JavaVM, _options: &Option<String>, initialize: fn(&mut JEventManager)) -> Result<()> {
+    let jvmti = vm.get_jvmti_env()?;
     debug!("Environment obtained");
 
     let mut capabilities = jvmti.get_capabilities()?;
-    let mut event_manger = JEventManager::new();
+    let mut event_manger = JEventManager::new(&mut capabilities);
 
-    initialize(&mut capabilities, &mut event_manger);
+    initialize(&mut event_manger);
 
-    debug!("Event handlers enabled for the environment");
-
-    let _ = jvmti.add_capabilities(&capabilities);
-    debug!("Capabilities added to the environment");
-
-    event_manger.apply(&mut jvmti);
+    let ref env = jvmti;
+    event_manger.apply(env);
     debug!("Events enabled for the environment");
     Ok(())
 }

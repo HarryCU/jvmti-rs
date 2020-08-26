@@ -40,12 +40,12 @@ pub use crate::wrapper::jvmti_event_vm_init_handler;
 pub use crate::wrapper::jvmti_event_vm_object_alloc_handler;
 pub use crate::wrapper::jvmti_event_vm_start_handler;
 
-use crate::wrapper::{runner, JCapabilities, JEventManager};
+use crate::wrapper::{runner,  JEventManager};
 use jni::JavaVM;
 
 use log::{info, error};
 
-pub fn agent_on_load(vm: &JavaVM, options: &Option<String>, initialize: fn(&mut JCapabilities, &mut JEventManager)) -> i32 {
+pub fn agent_on_load(vm: &JavaVM, options: &Option<String>, initialize: fn(&mut JEventManager)) -> i32 {
     info!("Agent starting...");
     info!("Agent options: {}", options.as_ref().unwrap_or(&"".to_string()));
 
