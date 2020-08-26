@@ -27,6 +27,7 @@ impl<'a> JEventManager<'a> {
     }
 
     fn add_enable_event_item(&mut self, event: JvmtiEvent, event_thread: Option<JThreadID<'a>>) {
+        // event_thread = None see https://docs.oracle.com/javase/8/docs/platform/jvmti/jvmti.html#SetEventNotificationMode
         self.items.push(EventItem { mode: JvmtiEventMode::Enable, event, event_thread })
     }
 
@@ -40,9 +41,9 @@ impl<'a> JEventManager<'a> {
         self.add_enable_event_item(JvmtiEvent::VmDeath, None);
     }
 
-    pub fn thread_start_enabled(&mut self, event_thread: Option<JThreadID<'a>>) {
+    pub fn thread_start_enabled(&mut self) {
         self.callbacks.thread_start_enabled();
-        self.add_enable_event_item(JvmtiEvent::ThreadStart, event_thread);
+        self.add_enable_event_item(JvmtiEvent::ThreadStart, None);
     }
 
     pub fn thread_end_enabled(&mut self, event_thread: Option<JThreadID<'a>>) {
@@ -120,24 +121,24 @@ impl<'a> JEventManager<'a> {
         self.add_enable_event_item(JvmtiEvent::NativeMethodBind, event_thread);
     }
 
-    pub fn compiled_method_load_enabled(&mut self, event_thread: Option<JThreadID<'a>>) {
+    pub fn compiled_method_load_enabled(&mut self) {
         self.callbacks.compiled_method_load_enabled();
-        self.add_enable_event_item(JvmtiEvent::CompiledMethodLoad, event_thread);
+        self.add_enable_event_item(JvmtiEvent::CompiledMethodLoad, None);
     }
 
-    pub fn compiled_method_unload_enabled(&mut self, event_thread: Option<JThreadID<'a>>) {
+    pub fn compiled_method_unload_enabled(&mut self) {
         self.callbacks.compiled_method_unload_enabled();
-        self.add_enable_event_item(JvmtiEvent::CompiledMethodUnload, event_thread);
+        self.add_enable_event_item(JvmtiEvent::CompiledMethodUnload, None);
     }
 
-    pub fn dynamic_code_generated_enabled(&mut self, event_thread: Option<JThreadID<'a>>) {
+    pub fn dynamic_code_generated_enabled(&mut self) {
         self.callbacks.dynamic_code_generated_enabled();
-        self.add_enable_event_item(JvmtiEvent::DynamicCodeGenerated, event_thread);
+        self.add_enable_event_item(JvmtiEvent::DynamicCodeGenerated, None);
     }
 
-    pub fn data_dump_request_enabled(&mut self, event_thread: Option<JThreadID<'a>>) {
+    pub fn data_dump_request_enabled(&mut self) {
         self.callbacks.data_dump_request_enabled();
-        self.add_enable_event_item(JvmtiEvent::DataDumpRequest, event_thread);
+        self.add_enable_event_item(JvmtiEvent::DataDumpRequest, None);
     }
 
     pub fn monitor_wait_enabled(&mut self, event_thread: Option<JThreadID<'a>>) {
