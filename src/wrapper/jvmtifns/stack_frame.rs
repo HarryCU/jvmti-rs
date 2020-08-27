@@ -4,7 +4,6 @@ use crate::{errors::*, builder::*, objects::*, JVMTIEnv};
 use crate::sys;
 use crate::sys::{jvmtiFrameInfo, jint, jvmtiStackInfo};
 
-
 impl<'a> JVMTIEnv<'a> {
     pub fn get_stack_trace(&self, thread: &JThreadID, start_depth: jint, max_frame_count: jint) -> Result<(JFrameInfo, jint)> {
         let mut frame_info: jvmtiFrameInfo = jvmtiFrameInfo {

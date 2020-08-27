@@ -32,6 +32,9 @@ impl<'a> JvmtiString<'a> {
 
 impl<'a> From<&JvmtiString<'a>> for Cow<'a, str> {
     fn from(other: &JvmtiString) -> Cow<'a, str> {
+        if other.ptr.is_null() {
+            return "".into();
+        }
         to_modified_utf8(other.ptr as *const c_char)
     }
 }
@@ -45,6 +48,9 @@ impl<'a> From<&JvmtiString<'a>> for String {
 
 impl<'a> From<JvmtiString<'a>> for Cow<'a, str> {
     fn from(other: JvmtiString) -> Cow<'a, str> {
+        if other.ptr.is_null() {
+            return "".into();
+        }
         to_modified_utf8(other.ptr as *const c_char)
     }
 }

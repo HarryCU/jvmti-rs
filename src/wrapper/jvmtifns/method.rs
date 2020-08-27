@@ -3,8 +3,36 @@ use std::ptr;
 use crate::{sys::*, errors::*, builder::*, objects::*, JVMTIEnv, JMethodName, JSignature, to_bool};
 use crate::sys;
 use jni::strings::JNIString;
+use std::os::raw::c_char;
 
 impl<'a> JVMTIEnv<'a> {
+    pub fn set_native_method_prefix<S>(&self, prefix: S) -> Result<()>
+        where
+            S: Into<JNIString> {
+        let value = prefix.into();
+        jvmti_call!(self.jvmti_raw(), SetNativeMethodPrefix,
+            value.as_ptr()
+        )
+    }
+
+    pub fn set_native_method_prefixes<S>(&self, prefixes: &Vec<S>) -> Result<()>
+        where
+            S: Into<JNIString> + AsRef<str> {
+        if prefixes.is_empty() {
+            return Ok(());
+        }
+
+        let mut prefixes: Vec<*mut c_char> = prefixes.iter().map(|e| {
+            let prefix: JNIString = e.into();
+            prefix.as_ptr() as *mut c_char
+        }).collect();
+
+        jvmti_call!(self.jvmti_raw(), SetNativeMethodPrefixes,
+            prefixes.len() as jint,
+            prefixes.as_mut_ptr()
+        )
+    }
+
     pub fn get_method_name(&self, method: &JMethodID) -> Result<JMethodName> {
         let mut name = ptr::null_mut();
         let mut signature = ptr::null_mut();
@@ -84,15 +112,6 @@ impl<'a> JVMTIEnv<'a> {
         );
         jvmti_error_code_to_result(res)?;
         Ok(builder.build(self))
-    }
-
-    pub fn set_native_method_prefix<S>(&self, prefix: S) -> Result<()>
-        where
-            S: Into<JNIString> {
-        let value = prefix.into();
-        jvmti_call!(self.jvmti_raw(), SetNativeMethodPrefix,
-            value.as_ptr()
-        )
     }
 
     pub fn get_bytecodes(&self, method: &JMethodID) -> Result<JMemoryAllocate> {

@@ -4,7 +4,6 @@ use std::{
 };
 
 use crate::{sys::*, objects::*, builder::*, errors::*, JVMTIEnv, JThreadInfo, JvmtiThreadState, JvmtiError, JvmtiThreadPriority};
-use crate::sys;
 
 impl<'a> JVMTIEnv<'a> {
     pub fn get_thread_state(&self, thread: &JThreadID) -> Result<JvmtiThreadState> {
@@ -16,7 +15,7 @@ impl<'a> JVMTIEnv<'a> {
     }
 
     pub fn get_current_thread(&self) -> Result<Option<JThreadID>> {
-        let mut thread_ptr: sys::jthread = ptr::null_mut();
+        let mut thread_ptr: jthread = ptr::null_mut();
         let res = jvmti_call_result!(self.jvmti_raw(), GetCurrentThread,
             &mut thread_ptr
         );
@@ -68,7 +67,7 @@ impl<'a> JVMTIEnv<'a> {
         if threads.is_empty() {
             return Ok(JvmtiError::EmptyArgument);
         }
-        let thread_ids: Vec<sys::jthread> = threads.iter().map(|&e| e.into()).collect();
+        let thread_ids: Vec<jthread> = threads.iter().map(|&e| e.into()).collect();
         let res = jvmti_call_number_result!(self.jvmti_raw(), jvmtiError,
             SuspendThreadList,
             thread_ids.len() as jint,
@@ -81,7 +80,7 @@ impl<'a> JVMTIEnv<'a> {
         if threads.is_empty() {
             return Ok(JvmtiError::EmptyArgument);
         }
-        let thread_ids: Vec<sys::jthread> = threads.iter().map(|&e| e.into()).collect();
+        let thread_ids: Vec<jthread> = threads.iter().map(|&e| e.into()).collect();
         let res = jvmti_call_number_result!(self.jvmti_raw(), jvmtiError,
             ResumeThreadList,
             thread_ids.len() as jint,

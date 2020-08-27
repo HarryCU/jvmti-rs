@@ -1,7 +1,7 @@
 class HelloWorld {
     public static void main(String[] args) throws Exception {
 
-        // System.in.read();
+        System.in.read();
         System.out.println("jvmti-rs >> Hello!");
 
         System.out.println("jvmti-rs >> Try jvmti exception");
