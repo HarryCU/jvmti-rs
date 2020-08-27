@@ -1,7 +1,7 @@
-use crate::wrapper::{
+use crate::{
+    objects::*,
     errors::*,
     JVMTIEnv,
-    JCapabilities,
 };
 use crate::sys::jvmtiCapabilities;
 

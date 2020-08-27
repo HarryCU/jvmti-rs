@@ -1,9 +1,9 @@
-use crate::wrapper::{
+use crate::{
+    sys::*,
     errors::*,
     objects::*,
     JVMTIEnv,
 };
-use crate::sys::{jlong, jint};
 
 impl<'a> JVMTIEnv<'a> {
     pub fn get_current_thread_cpu_time(&self) -> Result<jlong> {

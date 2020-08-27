@@ -1,5 +1,4 @@
-use crate::sys::{jvmtiExtensionFunctionInfo, jvmtiExtensionFunction, jvmtiParamInfo, jvmtiError};
-use crate::wrapper::{JParamInfo, JvmtiError, MutObjectArrayBuilder, stringify, Builder};
+use crate::{sys::*, objects::*, builder::*, JvmtiError, stringify};
 
 #[derive(Debug)]
 pub struct JExtensionFunctionInfo<'a> {

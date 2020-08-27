@@ -1,4 +1,4 @@
-use crate::wrapper::{JThreadGroupID, stringify};
+use crate::{objects::*, stringify};
 
 use std::marker::PhantomData;
 use crate::sys::jvmtiThreadGroupInfo;

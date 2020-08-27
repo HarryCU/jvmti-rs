@@ -1,8 +1,8 @@
-use crate::wrapper::{
-    JThreadGroupID,
+use crate::{
+    objects::*,
     stringify,
 };
-use crate::sys::{JObject, jvmtiThreadInfo};
+use crate::sys::jvmtiThreadInfo;
 use std::marker::PhantomData;
 use std::ptr;
 

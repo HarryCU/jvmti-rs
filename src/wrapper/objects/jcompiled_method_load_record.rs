@@ -1,4 +1,4 @@
-use crate::sys::JMethodID;
+use crate::objects::JMethodID;
 
 #[derive(Debug)]
 pub enum JCompiledMethodLoadRecord<'a> {

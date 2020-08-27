@@ -1,8 +1,8 @@
-use crate::wrapper::{
+use crate::{
+    objects::*,
     errors::*,
     JVMTIEnv,
 };
-use crate::sys::{JClass, JFieldID};
 
 impl<'a> JVMTIEnv<'a> {
     pub fn set_field_access_watch(&self, klass: &JClass, field: &JFieldID) -> Result<()> {

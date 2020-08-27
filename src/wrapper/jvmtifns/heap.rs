@@ -3,13 +3,7 @@ use std::{
     ptr,
 };
 
-use crate::wrapper::{
-    errors::*,
-    objects::*,
-    utils::*,
-    JVMTIEnv,
-};
-use crate::sys::{jint, JObject, jvmtiHeapCallbacks, JClass, jlong, jobject};
+use crate::{sys::*, errors::*, objects::*, JVMTIEnv, slice_raw};
 
 impl<'a> JVMTIEnv<'a> {
     pub fn follow_references(&self, heap_filter: jint, klass: &JClass,

@@ -1,10 +1,4 @@
-use crate::wrapper::{
-    errors::*,
-    objects::*,
-    builder::*,
-    JVMTIEnv,
-};
-use crate::sys::{jvmtiExtensionEventInfo, jvmtiExtensionFunctionInfo, jint, jvmtiExtensionEvent};
+use crate::{sys::*, errors::*, builder::*, objects::*, JVMTIEnv};
 
 impl<'a> JVMTIEnv<'a> {
     pub fn get_extension_events(&self) -> Result<Vec<JExtensionEventInfo>> {

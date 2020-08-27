@@ -1,4 +1,5 @@
-use crate::wrapper::*;
+use crate::objects::JvmtiString;
+use crate::JSignature;
 
 #[derive(Clone, Debug)]
 pub struct JMethodName<'a> {
@@ -7,7 +8,7 @@ pub struct JMethodName<'a> {
 }
 
 impl<'a> JMethodName<'a> {
-    pub fn new(name: JString, signature: JSignature<'a>) -> JMethodName<'a> {
+    pub fn new(name: JvmtiString, signature: JSignature<'a>) -> JMethodName<'a> {
         JMethodName {
             name: name.into(),
             signature,

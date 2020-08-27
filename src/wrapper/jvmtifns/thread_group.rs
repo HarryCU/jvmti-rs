@@ -1,5 +1,5 @@
 use std::ptr;
-use crate::wrapper::{errors::*, objects::*, builder::*, JVMTIEnv, JThreadGroupInfo};
+use crate::{errors::*, builder::*, objects::*, JVMTIEnv, JThreadGroupInfo};
 use crate::sys;
 use crate::sys::{jthreadGroup, jvmtiThreadGroupInfo};
 

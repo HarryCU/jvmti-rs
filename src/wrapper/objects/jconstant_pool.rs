@@ -1,4 +1,4 @@
-use crate::wrapper::{JMemoryAllocate, JVMTIEnv};
+use crate::{objects::*, JVMTIEnv};
 use std::marker::PhantomData;
 use crate::sys::{jint, jmemory};
 use jni_sys::jlong;

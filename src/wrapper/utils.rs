@@ -1,7 +1,6 @@
 use core::slice;
-use crate::sys;
-use crate::wrapper::to_modified_utf8;
-use crate::sys::jboolean;
+use crate::sys::*;
+use crate::to_modified_utf8;
 use std::os::raw::c_char;
 
 pub fn to_bool(jbool: jboolean) -> bool {
@@ -12,7 +11,7 @@ pub fn to_jboolean(value: bool) -> jboolean {
     if value { 1 } else { 0 }
 }
 
-pub fn slice_raw<'a, T>(data: *const T, len: sys::jint) -> &'a [T] {
+pub fn slice_raw<'a, T>(data: *const T, len: jint) -> &'a [T] {
     unsafe {
         if len == 0 || data.is_null() {
             return &[];

@@ -3,14 +3,7 @@ use std::{
     ptr,
 };
 
-use crate::wrapper::{
-    errors::*,
-    enums::*,
-    objects::*,
-    utils::*,
-    JVMTIEnv,
-};
-use crate::sys::{jvmtiError, jint, jvmtiJlocationFormat, jvmtiPhase};
+use crate::{sys::*, errors::*, objects::*, JVMTIEnv, JvmtiError, JvmtiVerboseFlag, JvmtiJlocationFormat, JvmtiPhase, to_jboolean};
 
 impl<'a> JVMTIEnv<'a> {
     pub fn dispose_environment(&self) -> Result<()> {
@@ -23,7 +16,7 @@ impl<'a> JVMTIEnv<'a> {
         ))
     }
 
-    pub fn get_error_name(&self, error: JvmtiError) -> Result<JString> {
+    pub fn get_error_name(&self, error: JvmtiError) -> Result<JvmtiString> {
         let mut name = ptr::null_mut();
         let err: jvmtiError = error.into();
         let res = jvmti_call_result!(self.jvmti_raw(), GetErrorName,

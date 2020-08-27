@@ -7,17 +7,14 @@ mod jvmtienv;
 mod constant;
 mod capabilities;
 
+pub use jni::sys::*;
+
 pub use cmlr::*;
 pub use utils::*;
 pub use r#type::*;
 pub use jvmtienv::*;
 pub use constant::*;
 pub use capabilities::*;
-
-pub use jni_sys::*;
-
-pub use jni::objects::*;
-pub use jni::strings::*;
 
 use std::os::raw::c_char;
 use std::os::raw::c_void;

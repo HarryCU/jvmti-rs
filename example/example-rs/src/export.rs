@@ -1,7 +1,7 @@
 use std::os::raw::c_char;
 
-use jvmti::sys;
-use jvmti::wrapper::*;
+use jvmti::{sys, errors::*, objects::*, event::*};
+
 use std::panic;
 use log::{debug, warn, error};
 use std::ffi::c_void;
@@ -9,6 +9,7 @@ use jni::JNIEnv;
 use jni_sys::jint;
 use std::string::String;
 use std::sync::Once;
+use jvmti::objects::JCompiledMethodLoadRecord;
 
 fn from_platform(_input: *const c_char) -> Result<Option<String>> {
     Ok(None)
@@ -102,7 +103,7 @@ static ONCE: Once = Once::new();
 
 fn class_load(event: ClassLoadEvent) {
     ONCE.call_once(|| {
-        jvmti_catch!(event, get_system_properties, {|items:&Vec<JString>| {
+        jvmti_catch!(event, get_system_properties, {|items:&Vec<JvmtiString>| {
             debug!("class_load  => get_system_properties(): {}", items.len());
             for item in items.iter() {
                 let str: String = item.into();
@@ -110,7 +111,7 @@ fn class_load(event: ClassLoadEvent) {
             }
         }});
 
-        jvmti_catch!(event, get_system_property, {|e:&JString| {
+        jvmti_catch!(event, get_system_property, {|e:&JvmtiString| {
             let str: String = e.into();
             debug!("class_load  => get_system_property(): {}", str);
         }}, "java.home");

@@ -1,5 +1,5 @@
 use crate::sys;
-use crate::wrapper::{ObjectArrayBuilder, JAddrLocationMap, Builder, slice_raw};
+use crate::{objects::*, builder::*, slice_raw};
 
 macro_rules! define_builder {
     ($sys_type:ident, $wrapper_type:ident) => (

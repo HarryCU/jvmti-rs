@@ -1,4 +1,5 @@
-use crate::sys::{jvmtiFrameInfo, JMethodID, jlocation};
+use crate::objects::JMethodID;
+use crate::sys::{jvmtiFrameInfo, jlocation};
 
 #[derive(Clone, Debug)]
 pub struct JFrameInfo<'a> {

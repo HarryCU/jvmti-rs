@@ -1,5 +1,4 @@
-use crate::sys::{JClass, jvmtiClassDefinition, jint, jmemory, jlong};
-use crate::wrapper::{JMemoryAllocate, JVMTIEnv};
+use crate::{sys::*, objects::*, JVMTIEnv};
 
 #[derive(Clone)]
 pub struct JClassDefinition<'a> {

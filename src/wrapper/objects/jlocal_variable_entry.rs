@@ -1,6 +1,8 @@
-use crate::wrapper::*;
+use crate::errors::*;
 
 use crate::sys::{jvmtiLocalVariableEntry, jlocation};
+use crate::objects::JvmtiString;
+use crate::{JVMTIEnv, JSignature, stringify};
 
 #[derive(Clone)]
 pub struct JLocalVariableEntry<'a> {
@@ -13,8 +15,8 @@ pub struct JLocalVariableEntry<'a> {
 
 impl<'a> JLocalVariableEntry<'a> {
     pub fn new<'b>(env: &JVMTIEnv<'b>, entry: &jvmtiLocalVariableEntry) -> Result<JLocalVariableEntry<'a>> {
-        let signature = JString::with_pointer(entry.signature, env);
-        let generic = JString::with_pointer(entry.generic_signature, env);
+        let signature = JvmtiString::with_pointer(entry.signature, env);
+        let generic = JvmtiString::with_pointer(entry.generic_signature, env);
         let signature = JSignature::new(signature, generic)?;
 
         Ok(JLocalVariableEntry {

@@ -1,11 +1,6 @@
 use std::ptr;
 
-use crate::wrapper::{
-    errors::*,
-    enums::*,
-    objects::*,
-    JVMTIEnv,
-};
+use crate::{errors::*, objects::*, JVMTIEnv, JvmtiEventMode, JvmtiEvent};
 use crate::sys::jvmtiEventCallbacks;
 
 impl<'a> JVMTIEnv<'a> {

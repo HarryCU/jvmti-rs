@@ -1,7 +1,6 @@
-use jni::JNIEnv;
-use crate::sys::{JClass, JMethodID, jvalue, JFieldID, JObject, jint, jlong, jmemory, jlocation};
-use crate::wrapper::{JVMTIEnv, JThreadID, JAddrLocationMap, JCompiledMethodLoadRecord};
 use std::os::raw::{c_char, c_void, c_uchar};
+use crate::{sys::*, objects::*, JVMTIEnv};
+use jni::JNIEnv;
 
 pub type EventBreakpointFn = Option<fn(event: BreakpointEvent)>;
 

@@ -1,4 +1,4 @@
-use crate::wrapper::{JThreadID, MutObjectArrayBuilder, Builder};
+use crate::{objects::*, builder::*};
 use crate::sys;
 use crate::sys::jthread;
 

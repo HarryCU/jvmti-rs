@@ -3,17 +3,8 @@ use std::{
     ptr,
 };
 
-use crate::wrapper::{
-    errors::*,
-    enums::*,
-    objects::*,
-    builder::*,
-    JVMTIEnv,
-    JThreadInfo,
-};
+use crate::{sys::*, objects::*, builder::*, errors::*, JVMTIEnv, JThreadInfo, JvmtiThreadState, JvmtiError, JvmtiThreadPriority};
 use crate::sys;
-use crate::sys::{jint, jvmtiError, jvmtiThreadState, JThrowable, JObject, jobject,
-                 jvmtiMonitorStackDepthInfo, jvmtiStartFunction};
 
 impl<'a> JVMTIEnv<'a> {
     pub fn get_thread_state(&self, thread: &JThreadID) -> Result<JvmtiThreadState> {
@@ -39,7 +30,7 @@ impl<'a> JVMTIEnv<'a> {
     }
 
     pub fn get_all_threads(&self) -> Result<Vec<JThreadID>> {
-        let mut builder: MutObjectArrayBuilder<sys::jthread> = MutObjectArrayBuilder::new();
+        let mut builder: MutObjectArrayBuilder<jthread> = MutObjectArrayBuilder::new();
         let res = jvmti_call_result!(self.jvmti_raw(), GetAllThreads,
             &mut builder.count,
             &mut builder.items

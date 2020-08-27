@@ -1,4 +1,4 @@
-use crate::wrapper::{JVMTIEnv, JDeallocate};
+use crate::{objects::*, JVMTIEnv};
 use jni_sys::jlong;
 use crate::sys::jmemory;
 

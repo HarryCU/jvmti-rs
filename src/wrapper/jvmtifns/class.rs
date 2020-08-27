@@ -1,16 +1,7 @@
 use std::ptr;
 
 use jni_sys::{jmethodID, jfieldID, jclass};
-use crate::wrapper::{
-    errors::*,
-    enums::*,
-    objects::*,
-    utils::*,
-    builder::*,
-    JVMTIEnv,
-    JSignature,
-};
-use crate::sys::{jboolean, JClass, JObject, jobject, jvmtiClassDefinition, jvmtiClassStatus, jint, JMethodID, JFieldID, jmemory};
+use crate::{sys::*, errors::*, builder::*, objects::*, JVMTIEnv, JSignature, JvmtiClassStatus, to_bool};
 
 impl<'a> JVMTIEnv<'a> {
     pub fn get_loaded_classes(&self) -> Result<Vec<JClass>> {
@@ -77,7 +68,7 @@ impl<'a> JVMTIEnv<'a> {
         Ok((res as jvmtiClassStatus).into())
     }
 
-    pub fn get_source_file_name(&self, klass: &JClass) -> Result<JString> {
+    pub fn get_source_file_name(&self, klass: &JClass) -> Result<JvmtiString> {
         let mut source_name = ptr::null_mut();
         let res = jvmti_call_result!(self.jvmti_raw(), GetSourceFileName,
             klass.into_inner(),
@@ -151,7 +142,7 @@ impl<'a> JVMTIEnv<'a> {
         Ok(to_bool(res))
     }
 
-    pub fn get_source_debug_extension(&self, klass: &JClass) -> Result<JString> {
+    pub fn get_source_debug_extension(&self, klass: &JClass) -> Result<JvmtiString> {
         let mut source_debug_extension = ptr::null_mut();
         let res = jvmti_call_result!(self.jvmti_raw(), GetSourceDebugExtension,
             klass.into_inner(),

@@ -1,5 +1,5 @@
-use crate::sys::JObject;
-use jni_sys::{jlong, jobject};
+use crate::objects::JObject;
+use crate::sys::{jlong, jobject};
 
 pub struct JTagObject<'a> {
     pub object: JObject<'a>,

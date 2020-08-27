@@ -1,5 +1,5 @@
 use std::ffi::c_void;
-use crate::wrapper::{JCompiledMethodLoadRecord, MutObjectArrayBuilder, Builder};
+use crate::{objects::*, builder::*};
 use crate::sys::{jvmtiCompiledMethodLoadRecordHeader, JVMTI_CMLR_MAJOR_VERSION, JVMTI_CMLR_MINOR_VERSION,
                  JVMTI_CMLR_DUMMY, JVMTI_CMLR_INLINE_INFO, jvmtiCompiledMethodLoadInlineRecord,
                  PCStackInfo, jvmtiCompiledMethodLoadDummyRecord};

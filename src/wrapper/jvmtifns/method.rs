@@ -1,9 +1,8 @@
 use std::ptr;
 
-use crate::wrapper::{errors::*, objects::*, utils::*, builder::*, JVMTIEnv, JMethodName, JSignature};
+use crate::{sys::*, errors::*, builder::*, objects::*, JVMTIEnv, JMethodName, JSignature, to_bool};
 use crate::sys;
-use crate::sys::{jboolean, jclass, JMethodID, JObject, jint, jvmtiLocalVariableEntry, JNIString, jvmtiLineNumberEntry, jmemory, jlong};
-
+use jni::strings::JNIString;
 
 impl<'a> JVMTIEnv<'a> {
     pub fn get_method_name(&self, method: &JMethodID) -> Result<JMethodName> {

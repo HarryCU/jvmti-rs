@@ -1,9 +1,9 @@
-use crate::wrapper::{
+use crate::{
+    sys::*,
     errors::*,
     objects::*,
     JVMTIEnv,
 };
-use crate::sys::{jdouble, jfloat, jint, jlong, JObject};
 
 impl<'a> JVMTIEnv<'a> {
     pub fn force_early_return_object(&self, thread: &JThreadID, value: &JObject) -> Result<()> {

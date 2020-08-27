@@ -1,5 +1,5 @@
 use crate::sys::{jlong, jvmtiTimerInfo, jvmtiTimerKind, jboolean};
-use crate::wrapper::{JvmtiTimerKind, to_bool};
+use crate::{JvmtiTimerKind, to_bool};
 use std::marker::PhantomData;
 
 #[derive(Debug)]

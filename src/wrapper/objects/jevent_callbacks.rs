@@ -2,7 +2,7 @@ use crate::sys::jvmtiEventCallbacks;
 use std::marker::PhantomData;
 use jni_sys::jint;
 use std::mem::size_of;
-use crate::wrapper::*;
+use crate::*;
 
 #[repr(transparent)]
 #[derive(Clone, Copy, Debug)]

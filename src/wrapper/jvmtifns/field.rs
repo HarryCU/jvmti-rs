@@ -1,13 +1,6 @@
 use std::ptr;
 
-use crate::wrapper::{
-    errors::*,
-    utils::*,
-    JVMTIEnv,
-    JSignature,
-    JFieldName,
-};
-use crate::sys::{jboolean, jclass, JFieldID, JClass, JObject, jint};
+use crate::{sys::*, objects::*, errors::*, JVMTIEnv, JSignature, JFieldName, to_bool};
 
 impl<'a> JVMTIEnv<'a> {
     pub fn get_field_name(&self, klass: &JClass, field: &JFieldID) -> Result<JFieldName> {

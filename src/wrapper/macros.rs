@@ -140,7 +140,7 @@ macro_rules! deref {
 #[macro_export]
 macro_rules! jvmti {
     ($jvmti_env:expr) => {
-        $crate::wrapper::JVMTIEnv::from_raw($jvmti_env).unwrap();
+        $crate::JVMTIEnv::from_raw($jvmti_env).unwrap();
     };
 }
 
@@ -156,7 +156,7 @@ macro_rules! jni {
 macro_rules! java_vm {
     ($vm:expr) => {{
         unsafe {
-            $crate::wrapper::JavaVM::from_raw($vm).unwrap()
+            $crate::JavaVM::from_raw($vm).unwrap()
         }
     }};
 }

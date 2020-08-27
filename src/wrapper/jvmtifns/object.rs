@@ -1,11 +1,11 @@
 use std::ptr;
 
-use crate::wrapper::{
+use crate::{
+    sys::*,
     errors::*,
     objects::*,
     JVMTIEnv,
 };
-use crate::sys::{JObject, jint, jvmtiMonitorUsage, jlong};
 
 impl<'a> JVMTIEnv<'a> {
     pub fn get_object_size(&self, object: &JObject) -> Result<jlong> {

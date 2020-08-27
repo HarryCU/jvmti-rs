@@ -1,11 +1,6 @@
 use std::ptr;
 
-use crate::wrapper::{
-    errors::*,
-    objects::*,
-    builder::*,
-    JVMTIEnv,
-};
+use crate::{errors::*, builder::*, objects::*, JVMTIEnv};
 use crate::sys;
 use crate::sys::{jvmtiFrameInfo, jint, jvmtiStackInfo};
 

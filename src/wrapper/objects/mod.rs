@@ -9,7 +9,7 @@ mod jclass_loader;
 mod jstack_info;
 mod jaddr_location_map;
 mod jevent_callbacks;
-mod jstring;
+mod jvmti_string;
 mod jthread_id;
 mod jthread_group_id;
 mod jmonitor_usage;
@@ -24,6 +24,9 @@ mod jmonitor_stack_depth_info;
 mod jextension_event_info;
 mod jextension_function_info;
 mod jtag_object;
+mod jheap_reference_info;
+
+pub use jni::objects::*;
 
 pub use jlocal_storage::*;
 pub use jclass_definition::*;
@@ -36,7 +39,7 @@ pub use jclass_loader::*;
 pub use jstack_info::*;
 pub use jaddr_location_map::*;
 pub use jevent_callbacks::*;
-pub use jstring::*;
+pub use jvmti_string::*;
 pub use jthread_id::*;
 pub use jthread_group_id::*;
 pub use jmonitor_usage::*;
@@ -51,4 +54,4 @@ pub use jmonitor_stack_depth_info::*;
 pub use jextension_event_info::*;
 pub use jextension_function_info::*;
 pub use jtag_object::*;
-
+pub use jheap_reference_info::*;

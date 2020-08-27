@@ -1,6 +1,6 @@
 use std::   ptr;
 use jni_sys::JNIEnv;
-use crate::wrapper::{
+use crate::{
     errors::*,
     JVMTIEnv,
 };
@@ -12,7 +12,7 @@ impl<'a> JVMTIEnv<'a> {
         )
     }
 
-    pub fn get_jni(&self) -> Result<jni::JNIEnv> {
+    pub fn get_jni(&self) -> Result<jni::JNIEnv<'a>> {
         let mut jni_env = ptr::null_mut();
         let res = jvmti_call_result!(self.jvmti_raw(), GetJNIFunctionTable,
             &mut jni_env

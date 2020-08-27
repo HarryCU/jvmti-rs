@@ -1,4 +1,5 @@
-use crate::sys::{jvmtiMonitorStackDepthInfo, JObject};
+use crate::sys::jvmtiMonitorStackDepthInfo;
+use crate::objects::JObject;
 
 #[derive(Debug)]
 pub struct JMonitorStackDepthInfo<'a> {

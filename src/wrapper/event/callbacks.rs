@@ -1,10 +1,8 @@
-use log::error;
 use std::os::raw::{c_void, c_char, c_uchar};
 use std::panic;
+use log::error;
 
-use crate::sys;
-use crate::sys::{jthread, jobject, jclass, jlong, jmethodID, jlocation, jint, jboolean, jvmtiAddrLocationMap, jvalue, jfieldID, jmemory};
-use crate::wrapper::*;
+use crate::{sys::*, event::*, builder::*, *};
 
 static mut EVENT_CALL_TABLE: EventHandlers = empty_event_handlers!();
 
@@ -63,7 +61,7 @@ impl EventAdjuster {
 }
 
 #[no_mangle]
-pub extern "C" fn jvmti_event_breakpoint_handler(jvmti_env: *mut sys::JVMTIEnv,
+pub extern "C" fn jvmti_event_breakpoint_handler(jvmti_env: *mut sys::jvmtiEnv,
                                                  jni_env: *mut sys::JNIEnv,
                                                  thread: jthread,
                                                  method: jmethodID,
@@ -83,7 +81,7 @@ pub extern "C" fn jvmti_event_breakpoint_handler(jvmti_env: *mut sys::JVMTIEnv,
 }
 
 #[no_mangle]
-pub extern "C" fn jvmti_event_class_file_load_hook_handler(jvmti_env: *mut sys::JVMTIEnv,
+pub extern "C" fn jvmti_event_class_file_load_hook_handler(jvmti_env: *mut sys::jvmtiEnv,
                                                            jni_env: *mut sys::JNIEnv,
                                                            class_being_redefined: jclass,
                                                            loader: jobject,
@@ -113,7 +111,7 @@ pub extern "C" fn jvmti_event_class_file_load_hook_handler(jvmti_env: *mut sys::
 }
 
 #[no_mangle]
-pub extern "C" fn jvmti_event_class_load_handler(jvmti_env: *mut sys::JVMTIEnv,
+pub extern "C" fn jvmti_event_class_load_handler(jvmti_env: *mut sys::jvmtiEnv,
                                                  jni_env: *mut sys::JNIEnv,
                                                  thread: jthread,
                                                  klass: jclass) {
@@ -131,7 +129,7 @@ pub extern "C" fn jvmti_event_class_load_handler(jvmti_env: *mut sys::JVMTIEnv,
 }
 
 #[no_mangle]
-pub extern "C" fn jvmti_event_class_prepare_handler(jvmti_env: *mut sys::JVMTIEnv,
+pub extern "C" fn jvmti_event_class_prepare_handler(jvmti_env: *mut sys::jvmtiEnv,
                                                     jni_env: *mut sys::JNIEnv,
                                                     thread: jthread,
                                                     klass: jclass) {
@@ -149,7 +147,7 @@ pub extern "C" fn jvmti_event_class_prepare_handler(jvmti_env: *mut sys::JVMTIEn
 }
 
 #[no_mangle]
-pub extern "C" fn jvmti_event_compiled_method_load_handler(jvmti_env: *mut sys::JVMTIEnv,
+pub extern "C" fn jvmti_event_compiled_method_load_handler(jvmti_env: *mut sys::jvmtiEnv,
                                                            method: jmethodID,
                                                            code_size: jint,
                                                            code_addr: *const c_void,
@@ -173,7 +171,7 @@ pub extern "C" fn jvmti_event_compiled_method_load_handler(jvmti_env: *mut sys::
 }
 
 #[no_mangle]
-pub extern "C" fn jvmti_event_compiled_method_unload_handler(jvmti_env: *mut sys::JVMTIEnv,
+pub extern "C" fn jvmti_event_compiled_method_unload_handler(jvmti_env: *mut sys::jvmtiEnv,
                                                              method: jmethodID,
                                                              code_addr: *const c_void) {
     unsafe {
@@ -188,7 +186,7 @@ pub extern "C" fn jvmti_event_compiled_method_unload_handler(jvmti_env: *mut sys
 }
 
 #[no_mangle]
-pub extern "C" fn jvmti_event_data_dump_request_handler(jvmti_env: *mut sys::JVMTIEnv) {
+pub extern "C" fn jvmti_event_data_dump_request_handler(jvmti_env: *mut sys::jvmtiEnv) {
     unsafe {
         let jvmti = jvmti!(jvmti_env);
         let event = DataDumpRequestEvent {
@@ -199,7 +197,7 @@ pub extern "C" fn jvmti_event_data_dump_request_handler(jvmti_env: *mut sys::JVM
 }
 
 #[no_mangle]
-pub extern "C" fn jvmti_event_dynamic_code_generated_handler(jvmti_env: *mut sys::JVMTIEnv,
+pub extern "C" fn jvmti_event_dynamic_code_generated_handler(jvmti_env: *mut sys::jvmtiEnv,
                                                              name: *const c_char,
                                                              address: *const c_void,
                                                              length: jint) {
@@ -216,7 +214,7 @@ pub extern "C" fn jvmti_event_dynamic_code_generated_handler(jvmti_env: *mut sys
 }
 
 #[no_mangle]
-pub extern "C" fn jvmti_event_exception_handler(jvmti_env: *mut sys::JVMTIEnv,
+pub extern "C" fn jvmti_event_exception_handler(jvmti_env: *mut sys::jvmtiEnv,
                                                 jni_env: *mut sys::JNIEnv,
                                                 thread: jthread,
                                                 method: jmethodID,
@@ -242,7 +240,7 @@ pub extern "C" fn jvmti_event_exception_handler(jvmti_env: *mut sys::JVMTIEnv,
 }
 
 #[no_mangle]
-pub extern "C" fn jvmti_event_exception_catch_handler(jvmti_env: *mut sys::JVMTIEnv,
+pub extern "C" fn jvmti_event_exception_catch_handler(jvmti_env: *mut sys::jvmtiEnv,
                                                       jni_env: *mut sys::JNIEnv,
                                                       thread: jthread,
                                                       method: jmethodID,
@@ -264,7 +262,7 @@ pub extern "C" fn jvmti_event_exception_catch_handler(jvmti_env: *mut sys::JVMTI
 }
 
 #[no_mangle]
-pub extern "C" fn jvmti_event_field_access_handler(jvmti_env: *mut sys::JVMTIEnv,
+pub extern "C" fn jvmti_event_field_access_handler(jvmti_env: *mut sys::jvmtiEnv,
                                                    jni_env: *mut sys::JNIEnv,
                                                    thread: jthread,
                                                    method: jmethodID,
@@ -290,7 +288,7 @@ pub extern "C" fn jvmti_event_field_access_handler(jvmti_env: *mut sys::JVMTIEnv
 }
 
 #[no_mangle]
-pub extern "C" fn jvmti_event_field_modification_handler(jvmti_env: *mut sys::JVMTIEnv,
+pub extern "C" fn jvmti_event_field_modification_handler(jvmti_env: *mut sys::jvmtiEnv,
                                                          jni_env: *mut sys::JNIEnv,
                                                          thread: jthread,
                                                          method: jmethodID,
@@ -320,7 +318,7 @@ pub extern "C" fn jvmti_event_field_modification_handler(jvmti_env: *mut sys::JV
 }
 
 #[no_mangle]
-pub extern "C" fn jvmti_event_frame_pop_handler(jvmti_env: *mut sys::JVMTIEnv,
+pub extern "C" fn jvmti_event_frame_pop_handler(jvmti_env: *mut sys::jvmtiEnv,
                                                 jni_env: *mut sys::JNIEnv,
                                                 thread: jthread,
                                                 method: jmethodID,
@@ -340,7 +338,7 @@ pub extern "C" fn jvmti_event_frame_pop_handler(jvmti_env: *mut sys::JVMTIEnv,
 }
 
 #[no_mangle]
-pub extern "C" fn jvmti_event_garbage_collection_finish_handler(jvmti_env: *mut sys::JVMTIEnv) {
+pub extern "C" fn jvmti_event_garbage_collection_finish_handler(jvmti_env: *mut sys::jvmtiEnv) {
     unsafe {
         let jvmti = jvmti!(jvmti_env);
         let event = GarbageCollectionFinishEvent {
@@ -351,7 +349,7 @@ pub extern "C" fn jvmti_event_garbage_collection_finish_handler(jvmti_env: *mut 
 }
 
 #[no_mangle]
-pub extern "C" fn jvmti_event_garbage_collection_start_handler(jvmti_env: *mut sys::JVMTIEnv) {
+pub extern "C" fn jvmti_event_garbage_collection_start_handler(jvmti_env: *mut sys::jvmtiEnv) {
     unsafe {
         let jvmti = jvmti!(jvmti_env);
         let event = GarbageCollectionStartEvent {
@@ -362,7 +360,7 @@ pub extern "C" fn jvmti_event_garbage_collection_start_handler(jvmti_env: *mut s
 }
 
 #[no_mangle]
-pub extern "C" fn jvmti_event_method_entry_handler(jvmti_env: *mut sys::JVMTIEnv,
+pub extern "C" fn jvmti_event_method_entry_handler(jvmti_env: *mut sys::jvmtiEnv,
                                                    jni_env: *mut sys::JNIEnv,
                                                    thread: jthread,
                                                    method: jmethodID) {
@@ -380,7 +378,7 @@ pub extern "C" fn jvmti_event_method_entry_handler(jvmti_env: *mut sys::JVMTIEnv
 }
 
 #[no_mangle]
-pub extern "C" fn jvmti_event_method_exit_handler(jvmti_env: *mut sys::JVMTIEnv,
+pub extern "C" fn jvmti_event_method_exit_handler(jvmti_env: *mut sys::jvmtiEnv,
                                                   jni_env: *mut sys::JNIEnv,
                                                   thread: jthread,
                                                   method: jmethodID,
@@ -402,7 +400,7 @@ pub extern "C" fn jvmti_event_method_exit_handler(jvmti_env: *mut sys::JVMTIEnv,
 }
 
 #[no_mangle]
-pub extern "C" fn jvmti_event_monitor_contended_enter_handler(jvmti_env: *mut sys::JVMTIEnv,
+pub extern "C" fn jvmti_event_monitor_contended_enter_handler(jvmti_env: *mut sys::jvmtiEnv,
                                                               jni_env: *mut sys::JNIEnv,
                                                               thread: jthread,
                                                               object: jobject) {
@@ -420,7 +418,7 @@ pub extern "C" fn jvmti_event_monitor_contended_enter_handler(jvmti_env: *mut sy
 }
 
 #[no_mangle]
-pub extern "C" fn jvmti_event_monitor_contended_entered_handler(jvmti_env: *mut sys::JVMTIEnv,
+pub extern "C" fn jvmti_event_monitor_contended_entered_handler(jvmti_env: *mut sys::jvmtiEnv,
                                                                 jni_env: *mut sys::JNIEnv,
                                                                 thread: jthread,
                                                                 object: jobject) {
@@ -438,7 +436,7 @@ pub extern "C" fn jvmti_event_monitor_contended_entered_handler(jvmti_env: *mut 
 }
 
 #[no_mangle]
-pub extern "C" fn jvmti_event_monitor_wait_handler(jvmti_env: *mut sys::JVMTIEnv,
+pub extern "C" fn jvmti_event_monitor_wait_handler(jvmti_env: *mut sys::jvmtiEnv,
                                                    jni_env: *mut sys::JNIEnv,
                                                    thread: jthread,
                                                    object: jobject,
@@ -458,7 +456,7 @@ pub extern "C" fn jvmti_event_monitor_wait_handler(jvmti_env: *mut sys::JVMTIEnv
 }
 
 #[no_mangle]
-pub extern "C" fn jvmti_event_monitor_waited_handler(jvmti_env: *mut sys::JVMTIEnv,
+pub extern "C" fn jvmti_event_monitor_waited_handler(jvmti_env: *mut sys::jvmtiEnv,
                                                      jni_env: *mut sys::JNIEnv,
                                                      thread: jthread,
                                                      object: jobject,
@@ -478,7 +476,7 @@ pub extern "C" fn jvmti_event_monitor_waited_handler(jvmti_env: *mut sys::JVMTIE
 }
 
 #[no_mangle]
-pub extern "C" fn jvmti_event_native_method_bind_handler(jvmti_env: *mut sys::JVMTIEnv,
+pub extern "C" fn jvmti_event_native_method_bind_handler(jvmti_env: *mut sys::jvmtiEnv,
                                                          jni_env: *mut sys::JNIEnv,
                                                          thread: jthread,
                                                          method: jmethodID,
@@ -500,7 +498,7 @@ pub extern "C" fn jvmti_event_native_method_bind_handler(jvmti_env: *mut sys::JV
 }
 
 #[no_mangle]
-pub extern "C" fn jvmti_event_object_free_handler(jvmti_env: *mut sys::JVMTIEnv, tag: jlong) {
+pub extern "C" fn jvmti_event_object_free_handler(jvmti_env: *mut sys::jvmtiEnv, tag: jlong) {
     unsafe {
         let jvmti = jvmti!(jvmti_env);
         let event = ObjectFreeEvent {
@@ -512,7 +510,7 @@ pub extern "C" fn jvmti_event_object_free_handler(jvmti_env: *mut sys::JVMTIEnv,
 }
 
 #[no_mangle]
-pub extern "C" fn jvmti_event_resource_exhausted_handler(jvmti_env: *mut sys::JVMTIEnv,
+pub extern "C" fn jvmti_event_resource_exhausted_handler(jvmti_env: *mut sys::jvmtiEnv,
                                                          jni_env: *mut sys::JNIEnv,
                                                          flags: jint,
                                                          reserved: *const c_void,
@@ -532,7 +530,7 @@ pub extern "C" fn jvmti_event_resource_exhausted_handler(jvmti_env: *mut sys::JV
 }
 
 #[no_mangle]
-pub extern "C" fn jvmti_event_single_step_handler(jvmti_env: *mut sys::JVMTIEnv,
+pub extern "C" fn jvmti_event_single_step_handler(jvmti_env: *mut sys::jvmtiEnv,
                                                   jni_env: *mut sys::JNIEnv,
                                                   thread: jthread,
                                                   method: jmethodID,
@@ -552,7 +550,7 @@ pub extern "C" fn jvmti_event_single_step_handler(jvmti_env: *mut sys::JVMTIEnv,
 }
 
 #[no_mangle]
-pub extern "C" fn jvmti_event_thread_end_handler(jvmti_env: *mut sys::JVMTIEnv,
+pub extern "C" fn jvmti_event_thread_end_handler(jvmti_env: *mut sys::jvmtiEnv,
                                                  jni_env: *mut sys::JNIEnv,
                                                  thread: jthread) {
     unsafe {
@@ -568,7 +566,7 @@ pub extern "C" fn jvmti_event_thread_end_handler(jvmti_env: *mut sys::JVMTIEnv,
 }
 
 #[no_mangle]
-pub extern "C" fn jvmti_event_thread_start_handler(jvmti_env: *mut sys::JVMTIEnv,
+pub extern "C" fn jvmti_event_thread_start_handler(jvmti_env: *mut sys::jvmtiEnv,
                                                    jni_env: *mut sys::JNIEnv,
                                                    thread: jthread) {
     unsafe {
@@ -584,7 +582,7 @@ pub extern "C" fn jvmti_event_thread_start_handler(jvmti_env: *mut sys::JVMTIEnv
 }
 
 #[no_mangle]
-pub extern "C" fn jvmti_event_vm_death_handler(jvmti_env: *mut sys::JVMTIEnv,
+pub extern "C" fn jvmti_event_vm_death_handler(jvmti_env: *mut sys::jvmtiEnv,
                                                jni_env: *mut sys::JNIEnv) {
     unsafe {
         let jvmti = jvmti!(jvmti_env);
@@ -598,7 +596,7 @@ pub extern "C" fn jvmti_event_vm_death_handler(jvmti_env: *mut sys::JVMTIEnv,
 }
 
 #[no_mangle]
-pub extern "C" fn jvmti_event_vm_init_handler(jvmti_env: *mut sys::JVMTIEnv,
+pub extern "C" fn jvmti_event_vm_init_handler(jvmti_env: *mut sys::jvmtiEnv,
                                               jni_env: *mut sys::JNIEnv,
                                               thread: jthread) {
     unsafe {
@@ -614,7 +612,7 @@ pub extern "C" fn jvmti_event_vm_init_handler(jvmti_env: *mut sys::JVMTIEnv,
 }
 
 #[no_mangle]
-pub extern "C" fn jvmti_event_vm_object_alloc_handler(jvmti_env: *mut sys::JVMTIEnv,
+pub extern "C" fn jvmti_event_vm_object_alloc_handler(jvmti_env: *mut sys::jvmtiEnv,
                                                       jni_env: *mut sys::JNIEnv,
                                                       thread: jthread,
                                                       object: jobject,
@@ -636,7 +634,7 @@ pub extern "C" fn jvmti_event_vm_object_alloc_handler(jvmti_env: *mut sys::JVMTI
 }
 
 #[no_mangle]
-pub extern "C" fn jvmti_event_vm_start_handler(jvmti_env: *mut sys::JVMTIEnv,
+pub extern "C" fn jvmti_event_vm_start_handler(jvmti_env: *mut sys::jvmtiEnv,
                                                jni_env: *mut sys::JNIEnv) {
     unsafe {
         let jvmti = jvmti!(jvmti_env);

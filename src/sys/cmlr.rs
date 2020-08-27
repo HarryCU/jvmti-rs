@@ -1,7 +1,6 @@
-use jni::sys::jint;
 use std::os::raw::c_char;
-use jni_sys::jmethodID;
 use std::ffi::c_void;
+use crate::sys::{jint, jmethodID};
 
 pub const JVMTI_CMLR_MAJOR_VERSION_1: i32 = 1;
 pub const JVMTI_CMLR_MINOR_VERSION_0: i32 = 0;

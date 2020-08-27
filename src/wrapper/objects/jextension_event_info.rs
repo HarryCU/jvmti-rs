@@ -1,6 +1,5 @@
-use crate::sys::{jvmtiExtensionEventInfo, jvmtiParamInfo};
-use crate::wrapper::{JvmtiParamTypes, JvmtiParamKind, stringify, to_bool, MutObjectArrayBuilder, Builder};
 use std::marker::PhantomData;
+use crate::{sys::*, builder::*, JvmtiParamTypes, JvmtiParamKind, stringify, to_bool};
 
 #[derive(Debug)]
 pub struct JExtensionEventInfo<'a> {

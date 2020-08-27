@@ -4,7 +4,7 @@ use error_chain::*;
 
 use crate::sys;
 use crate::sys::jvmtiError;
-use crate::wrapper::JvmtiError;
+use crate::JvmtiError;
 
 // see https://github.com/jni-rs/jni-rs/blob/master/src/wrapper/errors.rs
 error_chain! {
@@ -12,6 +12,10 @@ error_chain! {
     }
 
     errors {
+        JNILookupError(err : jni::errors::Error){
+            description("JNI Lookup something wrong")
+            display("JNI Lookup something wrong {:?}", err)
+        }
         JVMTIEnvMethodNotFound(name: &'static str) {
             description("Method pointer null in JVMTIEnv")
             display("JVMTIEnv null method pointer for {}", name)
@@ -40,6 +44,10 @@ error_chain! {
 }
 
 unsafe impl Sync for Error {}
+
+pub fn jni_lookup_error(err: jni::errors::Error) -> Error {
+    Error::from(ErrorKind::JNILookupError(err))
+}
 
 pub fn jvmti_error_code_to_result(code: sys::jvmtiError) -> Result<()> {
     match code {

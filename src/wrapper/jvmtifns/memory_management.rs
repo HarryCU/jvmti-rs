@@ -1,11 +1,11 @@
 use std::ptr;
 
-use crate::wrapper::{
+use crate::{
+    sys::*,
     errors::*,
     objects::*,
     JVMTIEnv,
 };
-use crate::sys::{jlong, jmemory};
 
 impl<'a> JVMTIEnv<'a> {
     pub fn allocate(&self, size: jlong) -> Result<Option<JMemoryAllocate>> {

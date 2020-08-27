@@ -1,11 +1,12 @@
 use std::ptr;
 
-use crate::wrapper::{
+use crate::{
     errors::*,
     objects::*,
     JVMTIEnv,
 };
-use crate::sys::{jlong, JNIString, jrawMonitorID};
+use jni::strings::JNIString;
+use crate::sys::{jrawMonitorID, jlong};
 
 impl<'a> JVMTIEnv<'a> {
     pub fn create_raw_monitor<N>(&self, name: N) -> Result<Option<JRawMonitorID>>

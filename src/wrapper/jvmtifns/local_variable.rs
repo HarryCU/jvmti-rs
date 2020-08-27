@@ -1,11 +1,11 @@
 use std::ptr;
 
-use crate::wrapper::{
+use crate::{
+    sys::*,
     errors::*,
     objects::*,
     JVMTIEnv,
 };
-use crate::sys::{jint, jfloat, jlong, jdouble, JObject, jobject};
 
 impl<'a> JVMTIEnv<'a> {
     pub fn get_local_instance(&self, thread: &JThreadID, depth: jint) -> Result<Option<JObject>> {

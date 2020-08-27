@@ -1,8 +1,8 @@
-use crate::wrapper::{
+use crate::{
     errors::*,
     JVMTIEnv,
 };
-use crate::sys::JNIString;
+use jni::strings::JNIString;
 
 impl<'a> JVMTIEnv<'a> {
     pub fn add_to_bootstrap_class_loader_search<S>(&self, segment: S) -> Result<()>

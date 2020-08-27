@@ -1,4 +1,4 @@
-use crate::wrapper::*;
+use crate::{errors::*, *};
 use log::debug;
 use jni::JavaVM;
 

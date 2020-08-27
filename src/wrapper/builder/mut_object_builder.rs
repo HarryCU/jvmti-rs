@@ -1,14 +1,9 @@
-use crate::wrapper::{JThreadID, Builder, slice_raw, MutObjectArrayBuilder,
-                     JThreadGroupID, JCompiledMethodLoadRecordStackInfo,
-                     JCompiledMethodLoadRecordStackFrame, JLineNumberEntry, JLocalVariableEntry,
-                     JVMTIEnv, JvmtiError, JFrameInfo, WithJvmtiEvnBuilder, JStackInfo, JMonitorStackDepthInfo,
-                     JParamInfo, JExtensionEventInfo, JExtensionFunctionInfo};
-use crate::sys;
-use crate::sys::{JMethodID, JFieldID, JClass, jvmtiLocalVariableEntry, JObject};
+use crate::{sys::*, objects::*, builder::*, slice_raw,
+            JVMTIEnv, JvmtiError};
 
 macro_rules! define_builder {
     ($sys_type:ident, $wrapper_type:ident) => (
-        impl<'a> Builder<$wrapper_type<'a>> for MutObjectArrayBuilder<sys::$sys_type> {
+        impl<'a> Builder<$wrapper_type<'a>> for MutObjectArrayBuilder<$sys_type> {
             fn build(&self) -> Vec<$wrapper_type<'a>> {
                 if self.count == 0 || self.items.is_null() {
                     return vec![];
@@ -22,7 +17,7 @@ macro_rules! define_builder {
         }
     );
     ($sys_type:ident, $wrapper_type:ident, $convert_type:ty) => (
-        impl<'a> Builder<$wrapper_type<'a>> for MutObjectArrayBuilder<sys::$sys_type> {
+        impl<'a> Builder<$wrapper_type<'a>> for MutObjectArrayBuilder<$sys_type> {
             fn build(&self) -> Vec<$wrapper_type<'a>> {
                 if self.count == 0 || self.items.is_null() {
                     return vec![];
@@ -45,27 +40,27 @@ define_builder!(jvmtiFrameInfo, JFrameInfo);
 define_builder!(jvmtiStackInfo, JStackInfo);
 define_builder!(jvmtiExtensionFunctionInfo, JExtensionFunctionInfo);
 
-define_builder!(jthread, JThreadID, sys::jthread);
-define_builder!(jthreadGroup, JThreadGroupID, sys::jthreadGroup);
-define_builder!(jmethodID, JMethodID, sys::jmethodID);
-define_builder!(jfieldID, JFieldID, sys::jfieldID);
-define_builder!(jclass, JClass, sys::jclass);
-define_builder!(jvmtiLineNumberEntry, JLineNumberEntry, sys::jvmtiLineNumberEntry);
+define_builder!(jthread, JThreadID, jthread);
+define_builder!(jthreadGroup, JThreadGroupID, jthreadGroup);
+define_builder!(jmethodID, JMethodID, jmethodID);
+define_builder!(jfieldID, JFieldID, jfieldID);
+define_builder!(jclass, JClass, jclass);
+define_builder!(jvmtiLineNumberEntry, JLineNumberEntry, jvmtiLineNumberEntry);
 
-impl<'a> Builder<JvmtiError> for MutObjectArrayBuilder<sys::jvmtiError> {
+impl<'a> Builder<JvmtiError> for MutObjectArrayBuilder<jvmtiError> {
     fn build(&self) -> Vec<JvmtiError> {
         if self.count == 0 || self.items.is_null() {
             return vec![];
         }
         let items = slice_raw(self.items, self.count);
         let res: Vec<JvmtiError> = items.iter()
-            .map(|&e| (e as sys::jvmtiError).into())
+            .map(|&e| (e as jvmtiError).into())
             .collect();
         res
     }
 }
 
-impl<'a> Builder<JCompiledMethodLoadRecordStackInfo<'a>> for MutObjectArrayBuilder<sys::PCStackInfo> {
+impl<'a> Builder<JCompiledMethodLoadRecordStackInfo<'a>> for MutObjectArrayBuilder<PCStackInfo> {
     fn build(&self) -> Vec<JCompiledMethodLoadRecordStackInfo<'a>> {
         if self.count == 0 || self.items.is_null() {
             return vec![];
@@ -88,7 +83,7 @@ impl<'a> Builder<JCompiledMethodLoadRecordStackInfo<'a>> for MutObjectArrayBuild
     }
 }
 
-impl<'a> WithJvmtiEvnBuilder<JLocalVariableEntry<'a>> for MutObjectArrayBuilder<sys::jvmtiLocalVariableEntry> {
+impl<'a> WithJvmtiEvnBuilder<JLocalVariableEntry<'a>> for MutObjectArrayBuilder<jvmtiLocalVariableEntry> {
     fn build<'b>(&self, env: &JVMTIEnv<'b>) -> Vec<JLocalVariableEntry<'a>> {
         if self.count == 0 || self.items.is_null() {
             return vec![];

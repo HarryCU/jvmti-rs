@@ -1,4 +1,4 @@
-use crate::wrapper::{JEventCallbacks, JVMTIEnv, JThreadID, JvmtiEvent, JvmtiEventMode, JCapabilities};
+use crate::{objects::*, JVMTIEnv, JvmtiEvent, JvmtiEventMode};
 use log::debug;
 
 #[derive(Clone)]

@@ -1,5 +1,6 @@
-use crate::wrapper::*;
+use crate::errors::*;
 use std::marker::PhantomData;
+use crate::objects::JvmtiString;
 
 #[derive(Clone, Debug)]
 pub struct JSignature<'a> {
@@ -10,7 +11,7 @@ pub struct JSignature<'a> {
 }
 
 impl<'a> JSignature<'a> {
-    pub fn new(signature: JString, generic_signature: JString) -> Result<JSignature<'a>> {
+    pub fn new(signature: JvmtiString, generic_signature: JvmtiString) -> Result<JSignature<'a>> {
         Ok(JSignature {
             lifetime: PhantomData,
 

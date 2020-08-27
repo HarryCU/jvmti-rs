@@ -1,11 +1,11 @@
 use std::ffi::c_void;
 
-use crate::wrapper::{
+use crate::{
+    sys::*,
+    objects::*,
     errors::*,
     JVMTIEnv,
 };
-use crate::sys::{jvmtiHeapObjectFilter, jvmtiHeapObjectCallback, JClass, jvmtiStackReferenceCallback,
-                 jvmtiHeapRootCallback, jvmtiObjectReferenceCallback, JObject};
 
 impl<'a> JVMTIEnv<'a> {
     pub fn iterate_over_objects_reachable_from_object(&self, object: &JObject, callback: jvmtiObjectReferenceCallback, user_data: *const c_void) -> Result<()> {

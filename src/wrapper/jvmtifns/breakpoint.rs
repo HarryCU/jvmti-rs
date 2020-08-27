@@ -1,8 +1,9 @@
-use crate::wrapper::{
+use crate::{
+    objects::*,
     errors::*,
     JVMTIEnv,
 };
-use crate::sys::{JMethodID, jlocation};
+use crate::sys::jlocation;
 
 impl<'a> JVMTIEnv<'a> {
     pub fn set_breakpoint(&self, method: &JMethodID, location: jlocation) -> Result<()> {
