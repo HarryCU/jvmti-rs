@@ -1,10 +1,10 @@
 use crate::wrapper::*;
 
-use crate::sys::jvmtiLocalVariableEntry;
+use crate::sys::{jvmtiLocalVariableEntry, jlocation};
 
 #[derive(Clone)]
 pub struct JLocalVariableEntry<'a> {
-    pub start_location: JLocation<'a>,
+    pub start_location: jlocation,
     pub length: i32,
     pub name: String,
     pub signature: JSignature<'a>,

@@ -124,6 +124,14 @@ fn class_load(event: ClassLoadEvent) {
     })
 }
 
+fn exception(event: ExceptionEvent) {
+    debug!("exception => {:?}, {:?}, {}", event.thread, event.method, event.location)
+}
+
+fn exception_catch(event: ExceptionCatchEvent) {
+    debug!("exception_catch => {:?}, {:?}, {}, {:?}", event.thread, event.method, event.location, event.exception)
+}
+
 fn initialize(event_manager: &mut JEventManager) {
     event_manager.get_capabilities().can_generate_all_class_hook_events();
     event_manager.get_capabilities().can_tag_objects();
@@ -137,6 +145,8 @@ fn initialize(event_manager: &mut JEventManager) {
     event_manager.vm_object_alloc_enabled(None);
     event_manager.vm_start_enabled();
     event_manager.class_load_enabled(None);
+    event_manager.exception_enabled(None);
+    event_manager.exception_catch_enabled(None);
 
     EventAdjuster::on_class_prepare(Some(class_prepare));
     EventAdjuster::on_vm_start(Some(vm_start));
@@ -145,6 +155,8 @@ fn initialize(event_manager: &mut JEventManager) {
     EventAdjuster::on_compiled_method_load(Some(compiled_method_load));
     EventAdjuster::on_class_load(Some(class_load));
     EventAdjuster::on_vm_object_alloc(Some(vm_object_alloc));
+    EventAdjuster::on_exception(Some(exception));
+    EventAdjuster::on_exception_catch(Some(exception_catch));
 }
 
 #[allow(non_snake_case)]

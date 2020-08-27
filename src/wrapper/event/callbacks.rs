@@ -76,7 +76,7 @@ pub extern "C" fn jvmti_event_breakpoint_handler(jvmti_env: *mut sys::JVMTIEnv,
             jni: &jni,
             thread: thread.into(),
             method: method.into(),
-            location: location.into(),
+            location,
         };
         event_call!("jvmti_event_breakpoint_handler", breakpoint, event)
     }
@@ -232,7 +232,7 @@ pub extern "C" fn jvmti_event_exception_handler(jvmti_env: *mut sys::JVMTIEnv,
             jni: &jni,
             thread: thread.into(),
             method: method.into(),
-            location: location.into(),
+            location,
             exception: exception.into(),
             catch_method: catch_method.into(),
             catch_location: catch_location.into(),
@@ -256,7 +256,7 @@ pub extern "C" fn jvmti_event_exception_catch_handler(jvmti_env: *mut sys::JVMTI
             jni: &jni,
             thread: thread.into(),
             method: method.into(),
-            location: location.into(),
+            location,
             exception: exception.into(),
         };
         event_call!("jvmti_event_exception_catch_handler", exception_catch, event)
@@ -280,7 +280,7 @@ pub extern "C" fn jvmti_event_field_access_handler(jvmti_env: *mut sys::JVMTIEnv
             jni: &jni,
             thread: thread.into(),
             method: method.into(),
-            location: location.into(),
+            location,
             field_klass: field_klass.into(),
             object: object.into(),
             field: field.into(),
@@ -308,7 +308,7 @@ pub extern "C" fn jvmti_event_field_modification_handler(jvmti_env: *mut sys::JV
             jni: &jni,
             thread: thread.into(),
             method: method.into(),
-            location: location.into(),
+            location,
             field_klass: field_klass.into(),
             object: object.into(),
             field: field.into(),
@@ -545,7 +545,7 @@ pub extern "C" fn jvmti_event_single_step_handler(jvmti_env: *mut sys::JVMTIEnv,
             jni: &jni,
             thread: thread.into(),
             method: method.into(),
-            location: location.into(),
+            location,
         };
         event_call!("jvmti_event_single_step_handler", single_step, event)
     }

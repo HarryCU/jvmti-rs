@@ -1,12 +1,11 @@
-use crate::wrapper::JLocation;
-use crate::sys::{jvmtiFrameInfo, JMethodID};
+use crate::sys::{jvmtiFrameInfo, JMethodID, jlocation};
 
 #[derive(Clone, Debug)]
 pub struct JFrameInfo<'a> {
     internal: jvmtiFrameInfo,
 
     pub method: JMethodID<'a>,
-    pub location: JLocation<'a>,
+    pub location: jlocation,
 }
 
 impl<'a> From<jvmtiFrameInfo> for JFrameInfo<'a> {
@@ -15,7 +14,7 @@ impl<'a> From<jvmtiFrameInfo> for JFrameInfo<'a> {
             internal: info,
 
             method: info.method.into(),
-            location: info.location.into(),
+            location: info.location,
         }
     }
 }

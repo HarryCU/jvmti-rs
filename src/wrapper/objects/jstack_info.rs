@@ -1,5 +1,5 @@
-use crate::sys::{JMethodID, jvmtiFrameInfo, jvmtiStackInfo};
-use crate::wrapper::{JThreadID, JLocation, MutObjectArrayBuilder, Builder};
+use crate::sys::{JMethodID, jvmtiFrameInfo, jvmtiStackInfo, jlocation};
+use crate::wrapper::{JThreadID, MutObjectArrayBuilder, Builder};
 
 #[derive(Clone)]
 pub struct JStackInfo<'a> {
@@ -16,7 +16,7 @@ pub struct JFrameInfo<'a> {
     internal: jvmtiFrameInfo,
 
     pub method: JMethodID<'a>,
-    pub location: JLocation<'a>,
+    pub location: jlocation,
 }
 
 impl<'a> From<jvmtiStackInfo> for JStackInfo<'a> {
@@ -47,7 +47,7 @@ impl<'a> From<jvmtiFrameInfo> for JFrameInfo<'a> {
             internal: frame_info,
 
             method: frame_info.method.into(),
-            location: frame_info.location.into(),
+            location: frame_info.location,
         };
     }
 }

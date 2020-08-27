@@ -204,7 +204,7 @@ pub const JVMTI_VERBOSE_CLASS                                            : jvmti
 pub const JVMTI_VERBOSE_JNI                                              : jvmtiVerboseFlag = 4;
 
 pub type jvmtiJlocationFormat = u32;
-/* JLocation Format Enumeration */
+/* jlocation Format Enumeration */
 pub const JVMTI_JLOCATION_JVMBCI                                         : jvmtiJlocationFormat = 1;
 pub const JVMTI_JLOCATION_MACHINEPC                                      : jvmtiJlocationFormat = 2;
 pub const JVMTI_JLOCATION_OTHER                                          : jvmtiJlocationFormat = 0;

@@ -89,8 +89,7 @@ macro_rules! jvmti_method {
                 log::trace!("jvmtienv method not defined, returning error");
                 return Err($crate::wrapper::errors::Error::from(
                     $crate::wrapper::errors::ErrorKind::JVMTIEnvMethodNotFound(stringify!($name)),
-                )
-                .into());
+                ).into());
             }
         }
     }};

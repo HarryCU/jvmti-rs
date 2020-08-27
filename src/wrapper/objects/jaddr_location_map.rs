@@ -1,7 +1,6 @@
-use crate::sys::jvmtiAddrLocationMap;
+use crate::sys::{jvmtiAddrLocationMap, jlocation};
 use std::marker::PhantomData;
 use std::ffi::c_void;
-use crate::wrapper::JLocation;
 
 #[derive(Clone, Debug)]
 pub struct JAddrLocationMap<'a> {
@@ -9,7 +8,7 @@ pub struct JAddrLocationMap<'a> {
     lifetime: PhantomData<&'a ()>,
 
     pub start_address: *const c_void,
-    pub location: JLocation<'a>,
+    pub location: jlocation,
 }
 
 
@@ -20,7 +19,7 @@ impl<'a> From<jvmtiAddrLocationMap> for JAddrLocationMap<'a> {
             lifetime: PhantomData,
 
             start_address: location_map.start_address,
-            location: location_map.location.into(),
+            location: location_map.location,
         }
     }
 }

@@ -1,6 +1,6 @@
 use jni::JNIEnv;
-use crate::sys::{JClass, JMethodID, jvalue, JFieldID, JObject, jint, jlong, jmemory};
-use crate::wrapper::{JVMTIEnv, JThreadID, JLocation, JAddrLocationMap, JCompiledMethodLoadRecord};
+use crate::sys::{JClass, JMethodID, jvalue, JFieldID, JObject, jint, jlong, jmemory, jlocation};
+use crate::wrapper::{JVMTIEnv, JThreadID, JAddrLocationMap, JCompiledMethodLoadRecord};
 use std::os::raw::{c_char, c_void, c_uchar};
 
 pub type EventBreakpointFn = Option<fn(event: BreakpointEvent)>;
@@ -71,7 +71,7 @@ pub struct BreakpointEvent<'a> {
     pub jni: &'a JNIEnv<'a>,
     pub thread: JThreadID<'a>,
     pub method: JMethodID<'a>,
-    pub location: JLocation<'a>,
+    pub location: jlocation,
 }
 
 pub struct ClassFileLoadHookEvent<'a> {
@@ -132,10 +132,10 @@ pub struct ExceptionEvent<'a> {
     pub jni: &'a JNIEnv<'a>,
     pub thread: JThreadID<'a>,
     pub method: JMethodID<'a>,
-    pub location: JLocation<'a>,
+    pub location: jlocation,
     pub exception: JObject<'a>,
     pub catch_method: JMethodID<'a>,
-    pub catch_location: JLocation<'a>,
+    pub catch_location: jlocation,
 }
 
 pub struct ExceptionCatchEvent<'a> {
@@ -143,7 +143,7 @@ pub struct ExceptionCatchEvent<'a> {
     pub jni: &'a JNIEnv<'a>,
     pub thread: JThreadID<'a>,
     pub method: JMethodID<'a>,
-    pub location: JLocation<'a>,
+    pub location: jlocation,
     pub exception: JObject<'a>,
 }
 
@@ -152,7 +152,7 @@ pub struct FieldAccessEvent<'a> {
     pub jni: &'a JNIEnv<'a>,
     pub thread: JThreadID<'a>,
     pub method: JMethodID<'a>,
-    pub location: JLocation<'a>,
+    pub location: jlocation,
     pub field_klass: JClass<'a>,
     pub object: JObject<'a>,
     pub field: JFieldID<'a>,
@@ -163,7 +163,7 @@ pub struct FieldModificationEvent<'a> {
     pub jni: &'a JNIEnv<'a>,
     pub thread: JThreadID<'a>,
     pub method: JMethodID<'a>,
-    pub location: JLocation<'a>,
+    pub location: jlocation,
     pub field_klass: JClass<'a>,
     pub object: JObject<'a>,
     pub field: JFieldID<'a>,
@@ -256,7 +256,7 @@ pub struct SingleStepEvent<'a> {
     pub jni: &'a JNIEnv<'a>,
     pub thread: JThreadID<'a>,
     pub method: JMethodID<'a>,
-    pub location: JLocation<'a>,
+    pub location: jlocation,
 }
 
 pub struct ThreadEndEvent<'a> {
