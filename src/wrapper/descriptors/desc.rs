@@ -1,5 +1,5 @@
 use crate::errors::*;
-use crate::JVMTIEnv;
+use jni::JNIEnv;
 
 /// see https://github.com/jni-rs/jni-rs/blob/master/src/wrapper/descriptors/desc.rs
 ///
@@ -11,12 +11,12 @@ use crate::JVMTIEnv;
 pub trait Desc<'a, T> {
     /// Different
     /// Look up the concrete type from the JVM.
-    fn lookup(self, _: &JVMTIEnv<'a>) -> Result<T>;
+    fn lookup(self, _: &JNIEnv<'a>) -> Result<T>;
 }
 
 impl<'a, T> Desc<'a, T> for T {
     /// Different
-    fn lookup(self, _: &JVMTIEnv<'a>) -> Result<T> {
+    fn lookup(self, _: &JNIEnv<'a>) -> Result<T> {
         Ok(self)
     }
 }

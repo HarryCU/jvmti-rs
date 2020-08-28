@@ -3,12 +3,18 @@ use std::os::raw::c_char;
 
 use crate::sys;
 use crate::{errors::*, objects::*};
+use jni::JNIEnv;
 
 #[derive(Clone)]
 #[repr(transparent)]
 pub struct JVMTIEnv<'a> {
     internal: *mut sys::jvmtiEnv,
     lifetime: PhantomData<&'a ()>,
+}
+
+pub struct JVMTIEnvFacade<'a> {
+    jvmti: &'a JVMTIEnv<'a>,
+    jni: &'a JNIEnv<'a>,
 }
 
 impl<'a> JVMTIEnv<'a> {
@@ -34,3 +40,20 @@ impl<'a> JVMTIEnv<'a> {
     }
 }
 
+impl<'a> JVMTIEnvFacade<'a> {
+    pub fn new<'b: 'a>(jvmti: &'b JVMTIEnv<'a>,
+                       jni: &'b JNIEnv<'a>, ) -> JVMTIEnvFacade<'a> {
+        JVMTIEnvFacade {
+            jvmti,
+            jni,
+        }
+    }
+
+    pub fn jvmti_rust(&self) -> &'a JVMTIEnv<'a> {
+        self.jvmti
+    }
+
+    pub fn jni_rust(&self) -> &'a JNIEnv<'a> {
+        self.jni
+    }
+}

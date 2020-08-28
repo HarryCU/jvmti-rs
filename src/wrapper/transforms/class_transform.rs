@@ -1,23 +1,23 @@
-use crate::{Transform, JVMTIEnv, Desc};
+use crate::{Transform, Desc};
 use jni::strings::JNIString;
 use crate::{errors::*, objects::JClass};
+use jni::JNIEnv;
 
 impl<'a, 'b> Transform<'a, JClass<'a>> for &'b str {
-    fn transform(self, env: &JVMTIEnv<'a>) -> Result<JClass<'a>> {
-        let jni = env.get_jni()?;
+    fn transform(self, jni: &JNIEnv<'a>) -> Result<JClass<'a>> {
         jni.find_class(self)
             .map_err(jni_lookup_error)
     }
 }
 
 impl<'a> Transform<'a, JClass<'a>> for JNIString {
-    fn transform(self, env: &JVMTIEnv<'a>) -> Result<JClass<'a>> {
-        self.lookup(env)
+    fn transform(self, jni: &JNIEnv<'a>) -> Result<JClass<'a>> {
+        self.lookup(jni)
     }
 }
 
 impl<'a> Transform<'a, JClass<'a>> for JClass<'a> {
-    fn transform(self, _: &JVMTIEnv<'a>) -> Result<JClass<'a>> {
+    fn transform(self, _: &JNIEnv<'a>) -> Result<JClass<'a>> {
         Ok(self)
     }
 }

@@ -69,8 +69,10 @@ pub extern "C" fn jvmti_event_breakpoint_handler(jvmti_env: *mut sys::jvmtiEnv,
     unsafe {
         let jvmti = jvmti!(jvmti_env);
         let jni = jni!(jni_env);
+        let jvmti_facade = JVMTIEnvFacade::new(&jvmti, &jni);
         let event = BreakpointEvent {
             jvmti: &jvmti,
+            jvmti_facade: &jvmti_facade,
             jni: &jni,
             thread: thread.into(),
             method: method.into(),
@@ -94,8 +96,10 @@ pub extern "C" fn jvmti_event_class_file_load_hook_handler(jvmti_env: *mut sys::
     unsafe {
         let jvmti = jvmti!(jvmti_env);
         let jni = jni!(jni_env);
+        let jvmti_facade = JVMTIEnvFacade::new(&jvmti, &jni);
         let event = ClassFileLoadHookEvent {
             jvmti: &jvmti,
+            jvmti_facade: &jvmti_facade,
             jni: &jni,
             class_being_redefined: class_being_redefined.into(),
             loader: loader.into(),
@@ -118,8 +122,10 @@ pub extern "C" fn jvmti_event_class_load_handler(jvmti_env: *mut sys::jvmtiEnv,
     unsafe {
         let jvmti = jvmti!(jvmti_env);
         let jni = jni!(jni_env);
+        let jvmti_facade = JVMTIEnvFacade::new(&jvmti, &jni);
         let event = ClassLoadEvent {
             jvmti: &jvmti,
+            jvmti_facade: &jvmti_facade,
             jni: &jni,
             thread: thread.into(),
             klass: klass.into(),
@@ -136,8 +142,10 @@ pub extern "C" fn jvmti_event_class_prepare_handler(jvmti_env: *mut sys::jvmtiEn
     unsafe {
         let jvmti = jvmti!(jvmti_env);
         let jni = jni!(jni_env);
+        let jvmti_facade = JVMTIEnvFacade::new(&jvmti, &jni);
         let event = ClassPrepareEvent {
             jvmti: &jvmti,
+            jvmti_facade: &jvmti_facade,
             jni: &jni,
             thread: thread.into(),
             klass: klass.into(),
@@ -225,8 +233,10 @@ pub extern "C" fn jvmti_event_exception_handler(jvmti_env: *mut sys::jvmtiEnv,
     unsafe {
         let jvmti = jvmti!(jvmti_env);
         let jni = jni!(jni_env);
+        let jvmti_facade = JVMTIEnvFacade::new(&jvmti, &jni);
         let event = ExceptionEvent {
             jvmti: &jvmti,
+            jvmti_facade: &jvmti_facade,
             jni: &jni,
             thread: thread.into(),
             method: method.into(),
@@ -249,8 +259,10 @@ pub extern "C" fn jvmti_event_exception_catch_handler(jvmti_env: *mut sys::jvmti
     unsafe {
         let jvmti = jvmti!(jvmti_env);
         let jni = jni!(jni_env);
+        let jvmti_facade = JVMTIEnvFacade::new(&jvmti, &jni);
         let event = ExceptionCatchEvent {
             jvmti: &jvmti,
+            jvmti_facade: &jvmti_facade,
             jni: &jni,
             thread: thread.into(),
             method: method.into(),
@@ -273,8 +285,10 @@ pub extern "C" fn jvmti_event_field_access_handler(jvmti_env: *mut sys::jvmtiEnv
     unsafe {
         let jvmti = jvmti!(jvmti_env);
         let jni = jni!(jni_env);
+        let jvmti_facade = JVMTIEnvFacade::new(&jvmti, &jni);
         let event = FieldAccessEvent {
             jvmti: &jvmti,
+            jvmti_facade: &jvmti_facade,
             jni: &jni,
             thread: thread.into(),
             method: method.into(),
@@ -301,8 +315,10 @@ pub extern "C" fn jvmti_event_field_modification_handler(jvmti_env: *mut sys::jv
     unsafe {
         let jvmti = jvmti!(jvmti_env);
         let jni = jni!(jni_env);
+        let jvmti_facade = JVMTIEnvFacade::new(&jvmti, &jni);
         let event = FieldModificationEvent {
             jvmti: &jvmti,
+            jvmti_facade: &jvmti_facade,
             jni: &jni,
             thread: thread.into(),
             method: method.into(),
@@ -326,8 +342,10 @@ pub extern "C" fn jvmti_event_frame_pop_handler(jvmti_env: *mut sys::jvmtiEnv,
     unsafe {
         let jvmti = jvmti!(jvmti_env);
         let jni = jni!(jni_env);
+        let jvmti_facade = JVMTIEnvFacade::new(&jvmti, &jni);
         let event = FramePopEvent {
             jvmti: &jvmti,
+            jvmti_facade: &jvmti_facade,
             jni: &jni,
             thread: thread.into(),
             method: method.into(),
@@ -367,8 +385,10 @@ pub extern "C" fn jvmti_event_method_entry_handler(jvmti_env: *mut sys::jvmtiEnv
     unsafe {
         let jvmti = jvmti!(jvmti_env);
         let jni = jni!(jni_env);
+        let jvmti_facade = JVMTIEnvFacade::new(&jvmti, &jni);
         let event = MethodEntryEvent {
             jvmti: &jvmti,
+            jvmti_facade: &jvmti_facade,
             jni: &jni,
             thread: thread.into(),
             method: method.into(),
@@ -387,8 +407,10 @@ pub extern "C" fn jvmti_event_method_exit_handler(jvmti_env: *mut sys::jvmtiEnv,
     unsafe {
         let jvmti = jvmti!(jvmti_env);
         let jni = jni!(jni_env);
+        let jvmti_facade = JVMTIEnvFacade::new(&jvmti, &jni);
         let event = MethodExitEvent {
             jvmti: &jvmti,
+            jvmti_facade: &jvmti_facade,
             jni: &jni,
             thread: thread.into(),
             method: method.into(),
@@ -407,8 +429,10 @@ pub extern "C" fn jvmti_event_monitor_contended_enter_handler(jvmti_env: *mut sy
     unsafe {
         let jvmti = jvmti!(jvmti_env);
         let jni = jni!(jni_env);
+        let jvmti_facade = JVMTIEnvFacade::new(&jvmti, &jni);
         let event = MonitorContendedEnterEvent {
             jvmti: &jvmti,
+            jvmti_facade: &jvmti_facade,
             jni: &jni,
             thread: thread.into(),
             object: object.into(),
@@ -425,8 +449,10 @@ pub extern "C" fn jvmti_event_monitor_contended_entered_handler(jvmti_env: *mut 
     unsafe {
         let jvmti = jvmti!(jvmti_env);
         let jni = jni!(jni_env);
+        let jvmti_facade = JVMTIEnvFacade::new(&jvmti, &jni);
         let event = MonitorContendedEnteredEvent {
             jvmti: &jvmti,
+            jvmti_facade: &jvmti_facade,
             jni: &jni,
             thread: thread.into(),
             object: object.into(),
@@ -444,8 +470,10 @@ pub extern "C" fn jvmti_event_monitor_wait_handler(jvmti_env: *mut sys::jvmtiEnv
     unsafe {
         let jvmti = jvmti!(jvmti_env);
         let jni = jni!(jni_env);
+        let jvmti_facade = JVMTIEnvFacade::new(&jvmti, &jni);
         let event = MonitorWaitEvent {
             jvmti: &jvmti,
+            jvmti_facade: &jvmti_facade,
             jni: &jni,
             thread: thread.into(),
             object: object.into(),
@@ -464,8 +492,10 @@ pub extern "C" fn jvmti_event_monitor_waited_handler(jvmti_env: *mut sys::jvmtiE
     unsafe {
         let jvmti = jvmti!(jvmti_env);
         let jni = jni!(jni_env);
+        let jvmti_facade = JVMTIEnvFacade::new(&jvmti, &jni);
         let event = MonitorWaitedEvent {
             jvmti: &jvmti,
+            jvmti_facade: &jvmti_facade,
             jni: &jni,
             thread: thread.into(),
             object: object.into(),
@@ -485,8 +515,10 @@ pub extern "C" fn jvmti_event_native_method_bind_handler(jvmti_env: *mut sys::jv
     unsafe {
         let jvmti = jvmti!(jvmti_env);
         let jni = jni!(jni_env);
+        let jvmti_facade = JVMTIEnvFacade::new(&jvmti, &jni);
         let event = NativeMethodBindEvent {
             jvmti: &jvmti,
+            jvmti_facade: &jvmti_facade,
             jni: &jni,
             thread: thread.into(),
             method: method.into(),
@@ -518,8 +550,10 @@ pub extern "C" fn jvmti_event_resource_exhausted_handler(jvmti_env: *mut sys::jv
     unsafe {
         let jvmti = jvmti!(jvmti_env);
         let jni = jni!(jni_env);
+        let jvmti_facade = JVMTIEnvFacade::new(&jvmti, &jni);
         let event = ResourceExhaustedEvent {
             jvmti: &jvmti,
+            jvmti_facade: &jvmti_facade,
             jni: &jni,
             flags,
             reserved,
@@ -538,8 +572,10 @@ pub extern "C" fn jvmti_event_single_step_handler(jvmti_env: *mut sys::jvmtiEnv,
     unsafe {
         let jvmti = jvmti!(jvmti_env);
         let jni = jni!(jni_env);
+        let jvmti_facade = JVMTIEnvFacade::new(&jvmti, &jni);
         let event = SingleStepEvent {
             jvmti: &jvmti,
+            jvmti_facade: &jvmti_facade,
             jni: &jni,
             thread: thread.into(),
             method: method.into(),
@@ -556,8 +592,10 @@ pub extern "C" fn jvmti_event_thread_end_handler(jvmti_env: *mut sys::jvmtiEnv,
     unsafe {
         let jvmti = jvmti!(jvmti_env);
         let jni = jni!(jni_env);
+        let jvmti_facade = JVMTIEnvFacade::new(&jvmti, &jni);
         let event = ThreadEndEvent {
             jvmti: &jvmti,
+            jvmti_facade: &jvmti_facade,
             jni: &jni,
             thread: thread.into(),
         };
@@ -572,8 +610,10 @@ pub extern "C" fn jvmti_event_thread_start_handler(jvmti_env: *mut sys::jvmtiEnv
     unsafe {
         let jvmti = jvmti!(jvmti_env);
         let jni = jni!(jni_env);
+        let jvmti_facade = JVMTIEnvFacade::new(&jvmti, &jni);
         let event = ThreadStartEvent {
             jvmti: &jvmti,
+            jvmti_facade: &jvmti_facade,
             jni: &jni,
             thread: thread.into(),
         };
@@ -587,8 +627,10 @@ pub extern "C" fn jvmti_event_vm_death_handler(jvmti_env: *mut sys::jvmtiEnv,
     unsafe {
         let jvmti = jvmti!(jvmti_env);
         let jni = jni!(jni_env);
+        let jvmti_facade = JVMTIEnvFacade::new(&jvmti, &jni);
         let event = VmDeathEvent {
             jvmti: &jvmti,
+            jvmti_facade: &jvmti_facade,
             jni: &jni,
         };
         event_call!("jvmti_event_vm_death_handler", vm_death, event)
@@ -602,8 +644,10 @@ pub extern "C" fn jvmti_event_vm_init_handler(jvmti_env: *mut sys::jvmtiEnv,
     unsafe {
         let jvmti = jvmti!(jvmti_env);
         let jni = jni!(jni_env);
+        let jvmti_facade = JVMTIEnvFacade::new(&jvmti, &jni);
         let event = VmInitEvent {
             jvmti: &jvmti,
+            jvmti_facade: &jvmti_facade,
             jni: &jni,
             thread: thread.into(),
         };
@@ -621,8 +665,10 @@ pub extern "C" fn jvmti_event_vm_object_alloc_handler(jvmti_env: *mut sys::jvmti
     unsafe {
         let jvmti = jvmti!(jvmti_env);
         let jni = jni!(jni_env);
+        let jvmti_facade = JVMTIEnvFacade::new(&jvmti, &jni);
         let event = VmObjectAllocEvent {
             jvmti: &jvmti,
+            jvmti_facade: &jvmti_facade,
             jni: &jni,
             thread: thread.into(),
             object: object.into(),
@@ -639,8 +685,10 @@ pub extern "C" fn jvmti_event_vm_start_handler(jvmti_env: *mut sys::jvmtiEnv,
     unsafe {
         let jvmti = jvmti!(jvmti_env);
         let jni = jni!(jni_env);
+        let jvmti_facade = JVMTIEnvFacade::new(&jvmti, &jni);
         let event = VmStartEvent {
             jvmti: &jvmti,
+            jvmti_facade: &jvmti_facade,
             jni: &jni,
         };
         event_call!("jvmti_event_vm_start_handler", vm_start, event)

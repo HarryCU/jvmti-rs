@@ -1,5 +1,5 @@
 use std::os::raw::{c_char, c_void, c_uchar};
-use crate::{sys::*, objects::*, JVMTIEnv};
+use crate::{sys::*, objects::*, JVMTIEnv, JVMTIEnvFacade};
 use jni::JNIEnv;
 
 pub type EventBreakpointFn = Option<fn(event: BreakpointEvent)>;
@@ -67,6 +67,7 @@ pub type VmStartFn = Option<fn(event: VmStartEvent)>;
 
 pub struct BreakpointEvent<'a> {
     pub jvmti: &'a JVMTIEnv<'a>,
+    pub jvmti_facade: &'a JVMTIEnvFacade<'a>,
     pub jni: &'a JNIEnv<'a>,
     pub thread: JThreadID<'a>,
     pub method: JMethodID<'a>,
@@ -75,6 +76,7 @@ pub struct BreakpointEvent<'a> {
 
 pub struct ClassFileLoadHookEvent<'a> {
     pub jvmti: &'a JVMTIEnv<'a>,
+    pub jvmti_facade: &'a JVMTIEnvFacade<'a>,
     pub jni: &'a JNIEnv<'a>,
     pub class_being_redefined: JClass<'a>,
     pub loader: JObject<'a>,
@@ -88,6 +90,7 @@ pub struct ClassFileLoadHookEvent<'a> {
 
 pub struct ClassLoadEvent<'a> {
     pub jvmti: &'a JVMTIEnv<'a>,
+    pub jvmti_facade: &'a JVMTIEnvFacade<'a>,
     pub jni: &'a JNIEnv<'a>,
     pub thread: JThreadID<'a>,
     pub klass: JClass<'a>,
@@ -95,6 +98,7 @@ pub struct ClassLoadEvent<'a> {
 
 pub struct ClassPrepareEvent<'a> {
     pub jvmti: &'a JVMTIEnv<'a>,
+    pub jvmti_facade: &'a JVMTIEnvFacade<'a>,
     pub jni: &'a JNIEnv<'a>,
     pub thread: JThreadID<'a>,
     pub klass: JClass<'a>,
@@ -128,6 +132,7 @@ pub struct DynamicCodeGeneratedEvent<'a> {
 
 pub struct ExceptionEvent<'a> {
     pub jvmti: &'a JVMTIEnv<'a>,
+    pub jvmti_facade: &'a JVMTIEnvFacade<'a>,
     pub jni: &'a JNIEnv<'a>,
     pub thread: JThreadID<'a>,
     pub method: JMethodID<'a>,
@@ -139,6 +144,7 @@ pub struct ExceptionEvent<'a> {
 
 pub struct ExceptionCatchEvent<'a> {
     pub jvmti: &'a JVMTIEnv<'a>,
+    pub jvmti_facade: &'a JVMTIEnvFacade<'a>,
     pub jni: &'a JNIEnv<'a>,
     pub thread: JThreadID<'a>,
     pub method: JMethodID<'a>,
@@ -148,6 +154,7 @@ pub struct ExceptionCatchEvent<'a> {
 
 pub struct FieldAccessEvent<'a> {
     pub jvmti: &'a JVMTIEnv<'a>,
+    pub jvmti_facade: &'a JVMTIEnvFacade<'a>,
     pub jni: &'a JNIEnv<'a>,
     pub thread: JThreadID<'a>,
     pub method: JMethodID<'a>,
@@ -159,6 +166,7 @@ pub struct FieldAccessEvent<'a> {
 
 pub struct FieldModificationEvent<'a> {
     pub jvmti: &'a JVMTIEnv<'a>,
+    pub jvmti_facade: &'a JVMTIEnvFacade<'a>,
     pub jni: &'a JNIEnv<'a>,
     pub thread: JThreadID<'a>,
     pub method: JMethodID<'a>,
@@ -172,6 +180,7 @@ pub struct FieldModificationEvent<'a> {
 
 pub struct FramePopEvent<'a> {
     pub jvmti: &'a JVMTIEnv<'a>,
+    pub jvmti_facade: &'a JVMTIEnvFacade<'a>,
     pub jni: &'a JNIEnv<'a>,
     pub thread: JThreadID<'a>,
     pub method: JMethodID<'a>,
@@ -184,6 +193,7 @@ pub struct GarbageCollectionStartEvent<'a> { pub jvmti: &'a JVMTIEnv<'a> }
 
 pub struct MethodEntryEvent<'a> {
     pub jvmti: &'a JVMTIEnv<'a>,
+    pub jvmti_facade: &'a JVMTIEnvFacade<'a>,
     pub jni: &'a JNIEnv<'a>,
     pub thread: JThreadID<'a>,
     pub method: JMethodID<'a>,
@@ -191,6 +201,7 @@ pub struct MethodEntryEvent<'a> {
 
 pub struct MethodExitEvent<'a> {
     pub jvmti: &'a JVMTIEnv<'a>,
+    pub jvmti_facade: &'a JVMTIEnvFacade<'a>,
     pub jni: &'a JNIEnv<'a>,
     pub thread: JThreadID<'a>,
     pub method: JMethodID<'a>,
@@ -200,6 +211,7 @@ pub struct MethodExitEvent<'a> {
 
 pub struct MonitorContendedEnterEvent<'a> {
     pub jvmti: &'a JVMTIEnv<'a>,
+    pub jvmti_facade: &'a JVMTIEnvFacade<'a>,
     pub jni: &'a JNIEnv<'a>,
     pub thread: JThreadID<'a>,
     pub object: JObject<'a>,
@@ -207,6 +219,7 @@ pub struct MonitorContendedEnterEvent<'a> {
 
 pub struct MonitorContendedEnteredEvent<'a> {
     pub jvmti: &'a JVMTIEnv<'a>,
+    pub jvmti_facade: &'a JVMTIEnvFacade<'a>,
     pub jni: &'a JNIEnv<'a>,
     pub thread: JThreadID<'a>,
     pub object: JObject<'a>,
@@ -214,6 +227,7 @@ pub struct MonitorContendedEnteredEvent<'a> {
 
 pub struct MonitorWaitEvent<'a> {
     pub jvmti: &'a JVMTIEnv<'a>,
+    pub jvmti_facade: &'a JVMTIEnvFacade<'a>,
     pub jni: &'a JNIEnv<'a>,
     pub thread: JThreadID<'a>,
     pub object: JObject<'a>,
@@ -222,6 +236,7 @@ pub struct MonitorWaitEvent<'a> {
 
 pub struct MonitorWaitedEvent<'a> {
     pub jvmti: &'a JVMTIEnv<'a>,
+    pub jvmti_facade: &'a JVMTIEnvFacade<'a>,
     pub jni: &'a JNIEnv<'a>,
     pub thread: JThreadID<'a>,
     pub object: JObject<'a>,
@@ -230,6 +245,7 @@ pub struct MonitorWaitedEvent<'a> {
 
 pub struct NativeMethodBindEvent<'a> {
     pub jvmti: &'a JVMTIEnv<'a>,
+    pub jvmti_facade: &'a JVMTIEnvFacade<'a>,
     pub jni: &'a JNIEnv<'a>,
     pub thread: JThreadID<'a>,
     pub method: JMethodID<'a>,
@@ -244,6 +260,7 @@ pub struct ObjectFreeEvent<'a> {
 
 pub struct ResourceExhaustedEvent<'a> {
     pub jvmti: &'a JVMTIEnv<'a>,
+    pub jvmti_facade: &'a JVMTIEnvFacade<'a>,
     pub jni: &'a JNIEnv<'a>,
     pub flags: jint,
     pub reserved: *const c_void,
@@ -252,6 +269,7 @@ pub struct ResourceExhaustedEvent<'a> {
 
 pub struct SingleStepEvent<'a> {
     pub jvmti: &'a JVMTIEnv<'a>,
+    pub jvmti_facade: &'a JVMTIEnvFacade<'a>,
     pub jni: &'a JNIEnv<'a>,
     pub thread: JThreadID<'a>,
     pub method: JMethodID<'a>,
@@ -260,22 +278,34 @@ pub struct SingleStepEvent<'a> {
 
 pub struct ThreadEndEvent<'a> {
     pub jvmti: &'a JVMTIEnv<'a>,
+    pub jvmti_facade: &'a JVMTIEnvFacade<'a>,
     pub jni: &'a JNIEnv<'a>,
     pub thread: JThreadID<'a>,
 }
 
 pub struct ThreadStartEvent<'a> {
     pub jvmti: &'a JVMTIEnv<'a>,
+    pub jvmti_facade: &'a JVMTIEnvFacade<'a>,
     pub jni: &'a JNIEnv<'a>,
     pub thread: JThreadID<'a>,
 }
 
-pub struct VmDeathEvent<'a> { pub jvmti: &'a JVMTIEnv<'a>, pub jni: &'a JNIEnv<'a> }
+pub struct VmDeathEvent<'a> {
+    pub jvmti: &'a JVMTIEnv<'a>,
+    pub jvmti_facade: &'a JVMTIEnvFacade<'a>,
+    pub jni: &'a JNIEnv<'a>,
+}
 
-pub struct VmInitEvent<'a> { pub jvmti: &'a JVMTIEnv<'a>, pub jni: &'a JNIEnv<'a>, pub thread: JThreadID<'a> }
+pub struct VmInitEvent<'a> {
+    pub jvmti: &'a JVMTIEnv<'a>,
+    pub jvmti_facade: &'a JVMTIEnvFacade<'a>,
+    pub jni: &'a JNIEnv<'a>,
+    pub thread: JThreadID<'a>,
+}
 
 pub struct VmObjectAllocEvent<'a> {
     pub jvmti: &'a JVMTIEnv<'a>,
+    pub jvmti_facade: &'a JVMTIEnvFacade<'a>,
     pub jni: &'a JNIEnv<'a>,
     pub thread: JThreadID<'a>,
     pub object: JObject<'a>,
@@ -283,4 +313,8 @@ pub struct VmObjectAllocEvent<'a> {
     pub size: jlong,
 }
 
-pub struct VmStartEvent<'a> { pub jvmti: &'a JVMTIEnv<'a>, pub jni: &'a JNIEnv<'a> }
+pub struct VmStartEvent<'a> {
+    pub jvmti: &'a JVMTIEnv<'a>,
+    pub jvmti_facade: &'a JVMTIEnvFacade<'a>,
+    pub jni: &'a JNIEnv<'a>,
+}

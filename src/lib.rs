@@ -19,12 +19,14 @@ mod wrapper {
     mod jvmtifns;
     mod jvmtienv;
     mod vm;
+    mod facade;
 
     pub mod errors;
     pub mod objects;
     pub mod runner;
     pub mod builder;
     pub mod event;
+
 
     pub use enums::*;
     pub use descriptors::*;
@@ -35,6 +37,7 @@ mod wrapper {
     pub use jvmtienv::*;
     pub use jvmtifns::*;
     pub use vm::*;
+    pub use facade::*;
 }
 
 pub use wrapper::*;

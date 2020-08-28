@@ -1,0 +1,21 @@
+use crate::{objects::*, errors::*, Transform, JVMTIEnvFacade};
+use crate::sys::jlocation;
+use jni::strings::JNIString;
+
+impl<'a> JVMTIEnvFacade<'a> {
+    pub fn set_breakpoint_i<K, M, V>(&self, class: K, name: M, sig: V, location: jlocation) -> Result<()>
+        where
+            K: Transform<'a, JClass<'a>>,
+            M: Into<JNIString>,
+            V: Into<JNIString> {
+        self.jvmti_rust().set_breakpoint_i(self.jni_rust(), class, name, sig, location)
+    }
+
+    pub fn clear_breakpoint_i<K, M, V>(&self, class: K, name: M, sig: V, location: jlocation) -> Result<()>
+        where
+            K: Transform<'a, JClass<'a>>,
+            M: Into<JNIString>,
+            V: Into<JNIString> {
+        self.jvmti_rust().clear_breakpoint_i(self.jni_rust(), class, name, sig, location)
+    }
+}

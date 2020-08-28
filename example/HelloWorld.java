@@ -6,6 +6,8 @@ class HelloWorld {
 
         System.out.println("jvmti-rs >> Try jvmti exception");
 
+        debug(1);
+
         try {
             throwException();
         } catch(Exception e) {
@@ -17,5 +19,8 @@ class HelloWorld {
 
     public static void throwException() throws Exception {
         throw new Exception("123");
+    }
+
+    public static void debug(java.lang.Integer size) {
     }
 }

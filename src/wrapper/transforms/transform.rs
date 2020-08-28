@@ -1,6 +1,10 @@
 use crate::errors::*;
-use crate::JVMTIEnv;
+use jni::JNIEnv;
 
 pub trait Transform<'a, T> {
-    fn transform(self, _: &JVMTIEnv<'a>) -> Result<T>;
+    fn transform(self, _: &JNIEnv<'a>) -> Result<T>;
+}
+
+pub trait AdapterTransform<T> {
+    fn transform(self) -> T;
 }

@@ -151,7 +151,6 @@ macro_rules! jni {
     };
 }
 
-
 #[macro_export]
 macro_rules! java_vm {
     ($vm:expr) => {{

@@ -4,12 +4,12 @@ use crate::{sys::*, objects::*, errors::*, JVMTIEnv, to_bool};
 use jni::strings::JNIString;
 
 impl<'a> JVMTIEnv<'a> {
-    pub fn get_field_declaring_class_s<K, F, V>(&self, class: K, name: F, sig: V) -> Result<JObject>
+    pub fn get_field_declaring_class_s<K, F, V>(&self, jni: &jni::JNIEnv<'a>, class: K, name: F, sig: V) -> Result<JObject>
         where
             K: Into<JNIString>,
             F: Into<JNIString>,
             V: Into<JNIString> {
-        let (klass, field) = self.get_static_field_id(class, name, sig)?;
+        let (klass, field) = self.get_static_field_id(jni, class, name, sig)?;
 
         let mut value_ptr: jclass = ptr::null_mut();
         let res = jvmti_call_result!(self.jvmti_raw(), GetFieldDeclaringClass,
@@ -21,12 +21,12 @@ impl<'a> JVMTIEnv<'a> {
         Ok(value_ptr.into())
     }
 
-    pub fn get_field_modifiers_s<K, F, V>(&self, class: K, name: F, sig: V) -> Result<jint>
+    pub fn get_field_modifiers_s<K, F, V>(&self, jni: &jni::JNIEnv<'a>, class: K, name: F, sig: V) -> Result<jint>
         where
             K: Into<JNIString>,
             F: Into<JNIString>,
             V: Into<JNIString> {
-        let (klass, field) = self.get_static_field_id(class, name, sig)?;
+        let (klass, field) = self.get_static_field_id(jni, class, name, sig)?;
 
         Ok(jvmti_call_number_result!(self.jvmti_raw(), jint,
             GetFieldModifiers,
@@ -35,12 +35,12 @@ impl<'a> JVMTIEnv<'a> {
         ))
     }
 
-    pub fn is_field_synthetic_s<K, F, V>(&self, class: K, name: F, sig: V) -> Result<bool>
+    pub fn is_field_synthetic_s<K, F, V>(&self, jni: &jni::JNIEnv<'a>, class: K, name: F, sig: V) -> Result<bool>
         where
             K: Into<JNIString>,
             F: Into<JNIString>,
             V: Into<JNIString> {
-        let (klass, field) = self.get_static_field_id(class, name, sig)?;
+        let (klass, field) = self.get_static_field_id(jni, class, name, sig)?;
 
         let res = jvmti_call_number_result!(self.jvmti_raw(), jboolean,
             IsFieldSynthetic,

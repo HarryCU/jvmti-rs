@@ -6,14 +6,14 @@ use std::{
 use crate::{sys::*, errors::*, objects::*, JVMTIEnv, slice_raw, Transform};
 
 impl<'a> JVMTIEnv<'a> {
-    pub fn follow_references<K>(&self, heap_filter: jint, class: K,
-                             initial_object: &JObject,
-                             callbacks: &Vec<jvmtiHeapCallbacks>,
-                             user_data: *const c_void,
+    pub fn follow_references<K>(&self, jni: &jni::JNIEnv<'a>, heap_filter: jint, class: K,
+                                initial_object: &JObject,
+                                callbacks: &Vec<jvmtiHeapCallbacks>,
+                                user_data: *const c_void,
     ) -> Result<()>
         where
             K: Transform<'a, JClass<'a>>, {
-        let klass = class.transform(self)?;
+        let klass = class.transform(jni)?;
 
         jvmti_call!(self.jvmti_raw(), FollowReferences,
             heap_filter,
@@ -24,13 +24,13 @@ impl<'a> JVMTIEnv<'a> {
         )
     }
 
-    pub fn iterate_through_heap<K>(&self, heap_filter: jint, class: K,
-                                callbacks: &Vec<jvmtiHeapCallbacks>,
-                                user_data: *const c_void,
+    pub fn iterate_through_heap<K>(&self, jni: &jni::JNIEnv<'a>, heap_filter: jint, class: K,
+                                   callbacks: &Vec<jvmtiHeapCallbacks>,
+                                   user_data: *const c_void,
     ) -> Result<()>
         where
             K: Transform<'a, JClass<'a>>, {
-        let klass = class.transform(self)?;
+        let klass = class.transform(jni)?;
 
         jvmti_call!(self.jvmti_raw(), IterateThroughHeap,
             heap_filter,

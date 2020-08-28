@@ -1,25 +1,24 @@
 use crate::*;
 use crate::{objects::*, errors::*};
 use jni::strings::JNIString;
+use jni::JNIEnv;
 
 impl<'a, 'b> Desc<'a, JClass<'a>> for &'b str {
-    fn lookup(self, env: &JVMTIEnv<'a>) -> Result<JClass<'a>> {
+    fn lookup(self, jni: &JNIEnv<'a>) -> Result<JClass<'a>> {
         let name: JNIString = self.into();
-        name.lookup(env)
+        name.lookup(jni)
     }
 }
 
 impl<'a> Desc<'a, JClass<'a>> for JNIString {
-    fn lookup(self, env: &JVMTIEnv<'a>) -> Result<JClass<'a>> {
-        let jni = env.get_jni()?;
+    fn lookup(self, jni: &JNIEnv<'a>) -> Result<JClass<'a>> {
         jni.find_class(self)
             .map_err(jni_lookup_error)
     }
 }
 
 impl<'a, 'b> Desc<'a, JClass<'a>> for JObject<'b> {
-    fn lookup(self, env: &JVMTIEnv<'a>) -> Result<JClass<'a>> {
-        let jni = env.get_jni()?;
+    fn lookup(self, jni: &JNIEnv<'a>) -> Result<JClass<'a>> {
         jni.get_object_class(self)
             .map_err(jni_lookup_error)
     }

@@ -1,6 +1,6 @@
 use std::os::raw::c_char;
 
-use jvmti::{sys, errors::*, objects::*, event::*};
+use jvmti::{sys, errors::*, objects::*, event::*, *};
 
 use std::panic;
 use log::{debug, warn, error};
@@ -56,7 +56,29 @@ pub extern "C" fn Agent_OnLoad(vm: *mut sys::JavaVM, options: *const c_char, res
 }
 
 fn method_entry(event: MethodEntryEvent) {
-    debug!("method_entry => {:?}", event.method);
+    let method_name = event.jvmti.get_method_name(event.method).unwrap();
+
+
+    if method_name.name == "debug" {
+        debug!("method_entry => {:?}", method_name);
+
+        let result = panic::catch_unwind(|| {
+            let klass = event.jvmti.get_class(event.jni, "HelloWorld").unwrap();
+            debug!("get_class => {:?}", klass);
+
+            let method = event.jvmti_facade.get_static_method_id(klass, "debug", "(Ljava/lang/Integer;)V").unwrap();
+            debug!("get_static_method_id => {:?}", method.into_inner());
+
+            let arg_size = event.jvmti_facade.get_arguments_size_s("HelloWorld", "debug", "(Ljava/lang/Integer;)V").unwrap();
+            debug!("get_arguments_size_s => {}", arg_size);
+        });
+        match result {
+            Ok(_) => (),
+            Err(e) => {
+                error!("panic: {:?}", e);
+            }
+        }
+    }
 }
 
 fn class_prepare(event: ClassPrepareEvent) {
@@ -143,8 +165,8 @@ fn initialize(event_manager: &mut JEventManager) {
     // event_manager.compiled_method_load_enabled(None);
     // event_manager.dynamic_code_generated_enabled(None);
     // event_manager.class_prepare_enabled(None);
-    // event_manager.method_entry_enabled(None);
-    event_manager.vm_object_alloc_enabled(None);
+    // event_manager.vm_object_alloc_enabled(None);
+    event_manager.method_entry_enabled(None);
     event_manager.vm_start_enabled();
     event_manager.class_load_enabled(None);
     event_manager.exception_enabled(None);

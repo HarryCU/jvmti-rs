@@ -1,8 +1,16 @@
 use std::ptr;
 
-use crate::{sys::*, errors::*, builder::*, objects::*, JVMTIEnv, JSignature, JvmtiClassStatus, to_bool, Transform};
+use crate::{sys::*, errors::*, builder::*, objects::*, JVMTIEnv, JSignature, JvmtiClassStatus, to_bool, Transform, Desc};
+use jni::strings::JNIString;
 
 impl<'a> JVMTIEnv<'a> {
+    pub fn get_class<S>(&self, jni: &jni::JNIEnv<'a>, name: S) -> Result<JClass>
+        where
+            S: Into<JNIString>, {
+        let ffi_name = name.into();
+        ffi_name.lookup(jni)
+    }
+
     pub fn get_loaded_classes(&self) -> Result<Vec<JClass>> {
         let mut builder: MutObjectArrayBuilder<jclass> = MutObjectArrayBuilder::new();
         let res = jvmti_call_result!( self.jvmti_raw(), GetLoadedClasses,
@@ -46,10 +54,10 @@ impl<'a> JVMTIEnv<'a> {
         )
     }
 
-    pub fn get_class_signature<K>(&self, class: K) -> Result<JSignature>
+    pub fn get_class_signature<K>(&self, jni: &jni::JNIEnv<'a>, class: K) -> Result<JSignature>
         where
             K: Transform<'a, JClass<'a>> {
-        let klass: JClass = class.transform(self)?;
+        let klass: JClass = class.transform(jni)?;
 
         let mut signature = ptr::null_mut();
         let mut generic = ptr::null_mut();
@@ -63,10 +71,10 @@ impl<'a> JVMTIEnv<'a> {
         JSignature::new(self.build_string(signature)?, self.build_string(generic)?)
     }
 
-    pub fn get_class_status<K>(&self, class: K) -> Result<JvmtiClassStatus>
+    pub fn get_class_status<K>(&self, jni: &jni::JNIEnv<'a>, class: K) -> Result<JvmtiClassStatus>
         where
             K: Transform<'a, JClass<'a>> {
-        let klass: JClass = class.transform(self)?;
+        let klass: JClass = class.transform(jni)?;
 
         let res = jvmti_call_number_result!(self.jvmti_raw(), jint,
             GetClassStatus,
@@ -75,10 +83,10 @@ impl<'a> JVMTIEnv<'a> {
         Ok((res as jvmtiClassStatus).into())
     }
 
-    pub fn get_source_file_name<K>(&self, class: K) -> Result<JvmtiString>
+    pub fn get_source_file_name<K>(&self, jni: &jni::JNIEnv<'a>, class: K) -> Result<JvmtiString>
         where
             K: Transform<'a, JClass<'a>> {
-        let klass: JClass = class.transform(self)?;
+        let klass: JClass = class.transform(jni)?;
 
         let mut source_name = ptr::null_mut();
         let res = jvmti_call_result!(self.jvmti_raw(), GetSourceFileName,
@@ -89,10 +97,10 @@ impl<'a> JVMTIEnv<'a> {
         self.build_string(source_name)
     }
 
-    pub fn get_class_modifiers<K>(&self, class: K) -> Result<jint>
+    pub fn get_class_modifiers<K>(&self, jni: &jni::JNIEnv<'a>, class: K) -> Result<jint>
         where
             K: Transform<'a, JClass<'a>> {
-        let klass: JClass = class.transform(self)?;
+        let klass: JClass = class.transform(jni)?;
 
         Ok(jvmti_call_number_result!(self.jvmti_raw(), jint,
             GetClassModifiers,
@@ -100,10 +108,10 @@ impl<'a> JVMTIEnv<'a> {
         ))
     }
 
-    pub fn get_class_methods<K>(&self, class: K) -> Result<Vec<JMethodID>>
+    pub fn get_class_methods<K>(&self, jni: &jni::JNIEnv<'a>, class: K) -> Result<Vec<JMethodID>>
         where
             K: Transform<'a, JClass<'a>> {
-        let klass: JClass = class.transform(self)?;
+        let klass: JClass = class.transform(jni)?;
 
         let mut builder: MutObjectArrayBuilder<jmethodID> = MutObjectArrayBuilder::new();
         let res = jvmti_call_result!( self.jvmti_raw(), GetClassMethods,
@@ -115,10 +123,10 @@ impl<'a> JVMTIEnv<'a> {
         Ok(builder.build())
     }
 
-    pub fn get_class_fields<K>(&self, class: K) -> Result<Vec<JFieldID>>
+    pub fn get_class_fields<K>(&self, jni: &jni::JNIEnv<'a>, class: K) -> Result<Vec<JFieldID>>
         where
             K: Transform<'a, JClass<'a>> {
-        let klass: JClass = class.transform(self)?;
+        let klass: JClass = class.transform(jni)?;
 
         let mut builder: MutObjectArrayBuilder<jfieldID> = MutObjectArrayBuilder::new();
         let res = jvmti_call_result!( self.jvmti_raw(), GetClassFields,
@@ -130,10 +138,10 @@ impl<'a> JVMTIEnv<'a> {
         Ok(builder.build())
     }
 
-    pub fn get_implemented_interfaces<K>(&self, class: K) -> Result<Vec<JClass>>
+    pub fn get_implemented_interfaces<K>(&self, jni: &jni::JNIEnv<'a>, class: K) -> Result<Vec<JClass>>
         where
             K: Transform<'a, JClass<'a>> {
-        let klass: JClass = class.transform(self)?;
+        let klass: JClass = class.transform(jni)?;
 
         let mut builder: MutObjectArrayBuilder<jclass> = MutObjectArrayBuilder::new();
         let res = jvmti_call_result!( self.jvmti_raw(), GetImplementedInterfaces,
@@ -145,10 +153,10 @@ impl<'a> JVMTIEnv<'a> {
         Ok(builder.build())
     }
 
-    pub fn is_interface<K>(&self, class: K) -> Result<bool>
+    pub fn is_interface<K>(&self, jni: &jni::JNIEnv<'a>, class: K) -> Result<bool>
         where
             K: Transform<'a, JClass<'a>> {
-        let klass: JClass = class.transform(self)?;
+        let klass: JClass = class.transform(jni)?;
 
         let res = jvmti_call_number_result!(self.jvmti_raw(), jboolean,
             IsInterface,
@@ -157,10 +165,10 @@ impl<'a> JVMTIEnv<'a> {
         Ok(to_bool(res))
     }
 
-    pub fn is_array_class<K>(&self, class: K) -> Result<bool>
+    pub fn is_array_class<K>(&self, jni: &jni::JNIEnv<'a>, class: K) -> Result<bool>
         where
             K: Transform<'a, JClass<'a>> {
-        let klass: JClass = class.transform(self)?;
+        let klass: JClass = class.transform(jni)?;
 
         let res = jvmti_call_number_result!(self.jvmti_raw(), jboolean,
             IsArrayClass,
@@ -169,10 +177,10 @@ impl<'a> JVMTIEnv<'a> {
         Ok(to_bool(res))
     }
 
-    pub fn is_modifiable_class<K>(&self, class: K) -> Result<bool>
+    pub fn is_modifiable_class<K>(&self, jni: &jni::JNIEnv<'a>, class: K) -> Result<bool>
         where
             K: Transform<'a, JClass<'a>> {
-        let klass: JClass = class.transform(self)?;
+        let klass: JClass = class.transform(jni)?;
 
         let res = jvmti_call_number_result!(self.jvmti_raw(), jboolean,
             IsModifiableClass,
@@ -181,10 +189,10 @@ impl<'a> JVMTIEnv<'a> {
         Ok(to_bool(res))
     }
 
-    pub fn get_source_debug_extension<K>(&self, class: K) -> Result<JvmtiString>
+    pub fn get_source_debug_extension<K>(&self, jni: &jni::JNIEnv<'a>, class: K) -> Result<JvmtiString>
         where
             K: Transform<'a, JClass<'a>> {
-        let klass: JClass = class.transform(self)?;
+        let klass: JClass = class.transform(jni)?;
 
         let mut source_debug_extension = ptr::null_mut();
         let res = jvmti_call_result!(self.jvmti_raw(), GetSourceDebugExtension,
@@ -195,10 +203,10 @@ impl<'a> JVMTIEnv<'a> {
         self.build_string(source_debug_extension)
     }
 
-    pub fn get_class_loader<K>(&self, class: K) -> Result<JClassLoader>
+    pub fn get_class_loader<K>(&self, jni: &jni::JNIEnv<'a>, class: K) -> Result<JClassLoader>
         where
             K: Transform<'a, JClass<'a>> {
-        let klass: JClass = class.transform(self)?;
+        let klass: JClass = class.transform(jni)?;
 
         let mut value: jobject = ptr::null_mut();
         let res = jvmti_call_result!(self.jvmti_raw(), GetClassLoader,
@@ -209,10 +217,10 @@ impl<'a> JVMTIEnv<'a> {
         return Ok(value.into());
     }
 
-    pub fn get_constant_pool<K>(&self, class: K) -> Result<JConstantPool>
+    pub fn get_constant_pool<K>(&self, jni: &jni::JNIEnv<'a>, class: K) -> Result<JConstantPool>
         where
             K: Transform<'a, JClass<'a>> {
-        let klass: JClass = class.transform(self)?;
+        let klass: JClass = class.transform(jni)?;
 
         let mut constant_pool_count: jint = 0 as jint;
         let mut constant_pool_byte_count: jint = 0 as jint;
@@ -228,10 +236,10 @@ impl<'a> JVMTIEnv<'a> {
         Ok(JConstantPool::new(constant_pool_count, constant_pool_byte_count, constant_pool_bytes, self))
     }
 
-    pub fn get_class_version_numbers<K>(&self, class: K) -> Result<JClassVersionNumber>
+    pub fn get_class_version_numbers<K>(&self, jni: &jni::JNIEnv<'a>, class: K) -> Result<JClassVersionNumber>
         where
             K: Transform<'a, JClass<'a>> {
-        let klass: JClass = class.transform(self)?;
+        let klass: JClass = class.transform(jni)?;
 
         let mut minor_version: jint = 0 as jint;
         let mut major_version: jint = 0 as jint;
