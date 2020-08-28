@@ -1,21 +1,21 @@
-use crate::{
-    objects::*,
-    errors::*,
-    JVMTIEnv,
-};
-use crate::sys::jlocation;
+use crate::{errors::*, JVMTIEnv, Transform};
+use crate::sys::{jlocation, jmethodID};
 
 impl<'a> JVMTIEnv<'a> {
-    pub fn set_breakpoint(&self, method: &JMethodID, location: jlocation) -> Result<()> {
+    pub fn set_breakpoint<M>(&self, method: M, location: jlocation) -> Result<()>
+        where
+            M: Transform<'a, jmethodID> {
         jvmti_call!(self.jvmti_raw(), SetBreakpoint,
-            method.into_inner(),
+            method.transform(self)?,
             location
         )
     }
 
-    pub fn clear_breakpoint(&self, method: &JMethodID, location: jlocation) -> Result<()> {
+    pub fn clear_breakpoint<M>(&self, method: M, location: jlocation) -> Result<()>
+        where
+            M: Transform<'a, jmethodID> {
         jvmti_call!(self.jvmti_raw(), ClearBreakpoint,
-            method.into_inner(),
+            method.transform(self)?,
             location
         )
     }

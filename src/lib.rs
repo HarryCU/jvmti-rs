@@ -11,6 +11,7 @@ mod wrapper {
     mod macros;
     mod enums;
     mod descriptors;
+    mod transforms;
     mod utils;
 
     mod decoder;
@@ -27,6 +28,7 @@ mod wrapper {
 
     pub use enums::*;
     pub use descriptors::*;
+    pub use transforms::*;
     pub use utils::*;
     pub use decoder::*;
     pub use metadata::*;

@@ -126,7 +126,7 @@ fn class_load(event: ClassLoadEvent) {
 }
 
 fn exception(event: ExceptionEvent) {
-    let method_name = event.jvmti.get_method_name(&event.method).unwrap();
+    let method_name = event.jvmti.get_method_name(event.method).unwrap();
     debug!("exception => {:?}, {:?}, {:?}, {}", event.thread, event.method, method_name, event.location)
 }
 

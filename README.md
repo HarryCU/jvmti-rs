@@ -21,11 +21,10 @@ make // TODO
 
 ## TODO
 
-- Simplify JVMTIEnv functions, learn & use design for jni-rs#descriptors 
-- Options: parse & design option struct
-- Check all functions to ensure that the memory is released correctly [jvmti docs](https://docs.oracle.com/javase/8/docs/platform/jvmti/jvmti.html#Deallocate) (keyword: The array should be freed with Deallocate.)
-- Rich test cases
-- 
+- [x] Simplify JVMTIEnv functions, learn & use design for jni-rs#descriptors 
+- [ ] Options: parse & design option struct
+- [ ] Check all functions to ensure that the memory is released correctly [jvmti docs](https://docs.oracle.com/javase/8/docs/platform/jvmti/jvmti.html#Deallocate) (keyword: The array should be freed with Deallocate.)
+- [ ] Rich test cases
 
 ## License
 

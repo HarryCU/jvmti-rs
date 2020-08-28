@@ -1,6 +1,6 @@
 use std::ptr;
 
-use crate::{sys::*, errors::*, builder::*, objects::*, JVMTIEnv, JMethodName, JSignature, to_bool};
+use crate::{sys::*, errors::*, builder::*, objects::*, JVMTIEnv, JMethodName, JSignature, to_bool, Desc, Transform};
 use crate::sys;
 use jni::strings::JNIString;
 use std::os::raw::c_char;
@@ -33,12 +33,15 @@ impl<'a> JVMTIEnv<'a> {
         )
     }
 
-    pub fn get_method_name(&self, method: &JMethodID) -> Result<JMethodName> {
+    pub fn get_method_name<M>(&self, method: M) -> Result<JMethodName>
+        where
+            M: Transform<'a, jmethodID> {
         let mut name = ptr::null_mut();
         let mut signature = ptr::null_mut();
         let mut generic = ptr::null_mut();
+
         let res = jvmti_call_result!(self.jvmti_raw(), GetMethodName,
-            method.into_inner(),
+            method.transform(self)?,
             &mut name,
             &mut signature,
             &mut generic
@@ -49,41 +52,51 @@ impl<'a> JVMTIEnv<'a> {
         Ok(JMethodName::new(self.build_string(name)?, signature))
     }
 
-    pub fn get_method_declaring_class(&self, method: &JMethodID) -> Result<JObject> {
+    pub fn get_method_declaring_class<M>(&self, method: M) -> Result<JObject>
+        where
+            M: Transform<'a, jmethodID> {
         let mut value_ptr: jclass = ptr::null_mut();
         let res = jvmti_call_result!(self.jvmti_raw(), GetMethodDeclaringClass,
-            method.into_inner(),
+            method.transform(self)?,
             &mut value_ptr
         );
         jvmti_error_code_to_result(res)?;
         Ok(value_ptr.into())
     }
 
-    pub fn get_method_modifiers(&self, method: &JMethodID) -> Result<jint> {
+    pub fn get_method_modifiers<M>(&self, method: M) -> Result<jint>
+        where
+            M: Transform<'a, jmethodID> {
         Ok(jvmti_call_number_result!(self.jvmti_raw(), jint,
             GetMethodModifiers,
-            method.into_inner()
+            method.transform(self)?
         ))
     }
 
-    pub fn get_max_locals(&self, method: &JMethodID) -> Result<jint> {
+    pub fn get_max_locals<M>(&self, method: M) -> Result<jint>
+        where
+            M: Transform<'a, jmethodID> {
         Ok(jvmti_call_number_result!(self.jvmti_raw(), jint,
             GetMaxLocals,
-            method.into_inner()
+            method.transform(self)?
         ))
     }
 
-    pub fn get_arguments_size(&self, method: &JMethodID) -> Result<jint> {
+    pub fn get_arguments_size<M>(&self, method: M) -> Result<jint>
+        where
+            M: Transform<'a, jmethodID> {
         Ok(jvmti_call_number_result!(self.jvmti_raw(), jint,
             GetArgumentsSize,
-            method.into_inner()
+            method.transform(self)?
         ))
     }
 
-    pub fn get_line_number_table(&self, method: &JMethodID) -> Result<Vec<JLineNumberEntry>> {
+    pub fn get_line_number_table<M>(&self, method: M) -> Result<Vec<JLineNumberEntry>>
+        where
+            M: Transform<'a, jmethodID> {
         let mut builder: MutObjectArrayBuilder<jvmtiLineNumberEntry> = MutObjectArrayBuilder::new();
         let res = jvmti_call_result!( self.jvmti_raw(), GetLineNumberTable,
-            method.into_inner(),
+            method.transform(self)?,
             &mut builder.count,
             &mut builder.items
         );
@@ -91,11 +104,13 @@ impl<'a> JVMTIEnv<'a> {
         Ok(builder.build())
     }
 
-    pub fn get_method_location(&self, method: &JMethodID) -> Result<JMethodLocation> {
+    pub fn get_method_location<M>(&self, method: M) -> Result<JMethodLocation>
+        where
+            M: Transform<'a, jmethodID> {
         let mut start_location: sys::jlocation = 0 as sys::jlocation;
         let mut end_location: sys::jlocation = 0 as sys::jlocation;
         let res = jvmti_call_result!(self.jvmti_raw(), GetMethodLocation,
-            method.into_inner(),
+            method.transform(self)?,
             &mut start_location,
             &mut end_location
         );
@@ -103,10 +118,12 @@ impl<'a> JVMTIEnv<'a> {
         Ok(JMethodLocation::new(start_location, end_location))
     }
 
-    pub fn get_local_variable_table(&self, method: &JMethodID) -> Result<Vec<JLocalVariableEntry>> {
+    pub fn get_local_variable_table<M>(&self, method: M) -> Result<Vec<JLocalVariableEntry>>
+        where
+            M: Transform<'a, jmethodID> {
         let mut builder: MutObjectArrayBuilder<jvmtiLocalVariableEntry> = MutObjectArrayBuilder::new();
         let res = jvmti_call_result!( self.jvmti_raw(), GetLocalVariableTable,
-            method.into_inner(),
+            method.transform(self)?,
             &mut builder.count,
             &mut builder.items
         );
@@ -114,11 +131,13 @@ impl<'a> JVMTIEnv<'a> {
         Ok(builder.build(self))
     }
 
-    pub fn get_bytecodes(&self, method: &JMethodID) -> Result<JMemoryAllocate> {
+    pub fn get_bytecodes<M>(&self, method: M) -> Result<JMemoryAllocate>
+        where
+            M: Transform<'a, jmethodID> {
         let mut bytecode_count: jint = 0 as jint;
         let mut bytecodes_ptr: jmemory = ptr::null_mut();
         let res = jvmti_call_result!(self.jvmti_raw(), GetBytecodes,
-            method.into_inner(),
+            method.transform(self)?,
             &mut bytecode_count,
             &mut bytecodes_ptr
         );
@@ -126,27 +145,51 @@ impl<'a> JVMTIEnv<'a> {
         Ok(JMemoryAllocate::new(bytecodes_ptr, bytecode_count as jlong, self))
     }
 
-    pub fn is_method_native(&self, method: &JMethodID) -> Result<bool> {
+    pub fn is_method_native<M>(&self, method: M) -> Result<bool>
+        where
+            M: Transform<'a, jmethodID> {
         let res = jvmti_call_number_result!(self.jvmti_raw(), jboolean,
             IsMethodNative,
-            method.into_inner()
+            method.transform(self)?
         );
         Ok(to_bool(res))
     }
 
-    pub fn is_method_synthetic(&self, method: &JMethodID) -> Result<bool> {
+    pub fn is_method_synthetic<M>(&self, method: M) -> Result<bool>
+        where
+            M: Transform<'a, jmethodID> {
         let res = jvmti_call_number_result!(self.jvmti_raw(), jboolean,
             IsMethodSynthetic,
-            method.into_inner()
+            method.transform(self)?
         );
         Ok(to_bool(res))
     }
 
-    pub fn is_method_obsolete(&self, method: &JMethodID) -> Result<bool> {
+    pub fn is_method_obsolete<M>(&self, method: M) -> Result<bool>
+        where
+            M: Transform<'a, jmethodID> {
         let res = jvmti_call_number_result!(self.jvmti_raw(), jboolean,
             IsMethodObsolete,
-            method.into_inner()
+            method.transform(self)?
         );
         Ok(to_bool(res))
+    }
+
+    pub fn get_method_id<K, M, V>(&self, class: K, name: M, sig: V) -> Result<JMethodID>
+        where
+            K: Transform<'a, JClass<'a>>,
+            M: Into<JNIString>,
+            V: Into<JNIString> {
+        let klass: JClass = class.transform(self)?;
+        (klass, name, sig).lookup(self)
+    }
+
+    pub fn get_static_method_id<K, M, V>(&self, class: K, name: M, sig: V) -> Result<JStaticMethodID>
+        where
+            K: Transform<'a, JClass<'a>>,
+            M: Into<JNIString>,
+            V: Into<JNIString> {
+        let klass: JClass = class.transform(self)?;
+        (klass, name, sig).lookup(self)
     }
 }
