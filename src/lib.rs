@@ -1,47 +1,15 @@
+extern crate jni;
+extern crate jni_sys;
 #[macro_use]
 extern crate lazy_static;
-extern crate jni_sys;
-extern crate jni;
 
-pub mod sys;
-pub mod perf;
+use std::os::raw::c_char;
 
-mod wrapper {
-    #[macro_use]
-    mod macros;
-    mod enums;
-    mod descriptors;
-    mod transforms;
-    mod utils;
-
-    mod decoder;
-    mod metadata;
-    mod jvmtifns;
-    mod jvmtienv;
-    mod vm;
-    mod facade;
-
-    pub mod errors;
-    pub mod objects;
-    pub mod runner;
-    pub mod builder;
-    pub mod event;
-
-
-    pub use enums::*;
-    pub use descriptors::*;
-    pub use transforms::*;
-    pub use utils::*;
-    pub use decoder::*;
-    pub use metadata::*;
-    pub use jvmtienv::*;
-    pub use jvmtifns::*;
-    pub use vm::*;
-    pub use facade::*;
-}
+use log::{error, info};
 
 pub use wrapper::*;
 
+use crate::{event::JEventManager, runner};
 pub use crate::event::jvmti_event_breakpoint_handler;
 pub use crate::event::jvmti_event_class_file_load_hook_handler;
 pub use crate::event::jvmti_event_class_load_handler;
@@ -50,8 +18,8 @@ pub use crate::event::jvmti_event_compiled_method_load_handler;
 pub use crate::event::jvmti_event_compiled_method_unload_handler;
 pub use crate::event::jvmti_event_data_dump_request_handler;
 pub use crate::event::jvmti_event_dynamic_code_generated_handler;
-pub use crate::event::jvmti_event_exception_handler;
 pub use crate::event::jvmti_event_exception_catch_handler;
+pub use crate::event::jvmti_event_exception_handler;
 pub use crate::event::jvmti_event_field_access_handler;
 pub use crate::event::jvmti_event_field_modification_handler;
 pub use crate::event::jvmti_event_frame_pop_handler;
@@ -74,12 +42,44 @@ pub use crate::event::jvmti_event_vm_init_handler;
 pub use crate::event::jvmti_event_vm_object_alloc_handler;
 pub use crate::event::jvmti_event_vm_start_handler;
 
-use log::{info, error};
-use crate::{event::JEventManager, runner};
+pub mod sys;
+pub mod perf;
 
-pub fn agent_on_load(vm: &JavaVM, options: &Option<String>, initialize: fn(&mut JEventManager)) -> i32 {
+mod wrapper {
+    pub use decoder::*;
+    pub use descriptors::*;
+    pub use enums::*;
+    pub use facade::*;
+    pub use jvmtienv::*;
+    pub use jvmtifns::*;
+    pub use metadata::*;
+    pub use transforms::*;
+    pub use utils::*;
+    pub use vm::*;
+
+    #[macro_use]
+    mod macros;
+    mod enums;
+    mod descriptors;
+    mod transforms;
+    mod utils;
+
+    mod decoder;
+    mod metadata;
+    mod jvmtifns;
+    mod jvmtienv;
+    mod vm;
+    mod facade;
+
+    pub mod errors;
+    pub mod objects;
+    pub mod runner;
+    pub mod builder;
+    pub mod event;
+}
+
+pub fn agent_on_load(vm: &JavaVM, options: *const c_char, initialize: fn(*const c_char, &mut JEventManager)) -> i32 {
     info!("Agent starting...");
-    info!("Agent options: {}", options.as_ref().unwrap_or(&"".to_string()));
 
     match runner::do_on_load(vm, options, initialize) {
         Ok(_) => 0,

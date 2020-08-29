@@ -22,10 +22,12 @@ make // TODO
 ## TODO
 
 - [x] Simplify JVMTIEnv functions, learn & use design for jni-rs#descriptors 
-- [ ] Options: parse & design option struct
 - [x] Check all functions to ensure that the memory is released correctly [[jvmti docs]](https://docs.oracle.com/javase/8/docs/platform/jvmti/jvmti.html#Deallocate)
     - [ ] `GetJNIFunctionTable: Untreated`
 - [ ] Rich test cases
+- [ ] Read and parse loaded class files, by rust-jvmti
+- [ ] Generate byte code from loaded or created class files, by rust-jvmti
+- [ ] JVM byte code instrumentation/transformation
 
 ## License
 
