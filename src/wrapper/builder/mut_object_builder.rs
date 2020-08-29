@@ -1,5 +1,9 @@
-use crate::{sys::*, objects::*, builder::*, slice_raw,
-            JVMTIEnv, JvmtiError};
+use std::os::raw::c_void;
+
+use log::error;
+
+use crate::{builder::*, JVMTIEnv, JvmtiError, objects::*,
+            slice_raw, sys::*};
 
 macro_rules! define_builder {
     ($sys_type:ident, $wrapper_type:ident) => (
@@ -32,20 +36,57 @@ macro_rules! define_builder {
     )
 }
 
-define_builder!(jobject, JObject);
-define_builder!(jvmtiMonitorStackDepthInfo, JMonitorStackDepthInfo);
-define_builder!(jvmtiParamInfo, JParamInfo);
-define_builder!(jvmtiExtensionEventInfo, JExtensionEventInfo);
-define_builder!(jvmtiFrameInfo, JFrameInfo);
-define_builder!(jvmtiStackInfo, JStackInfo);
-define_builder!(jvmtiExtensionFunctionInfo, JExtensionFunctionInfo);
+macro_rules! define_auto_deallocate_builder {
+    ($sys_type:ident, $wrapper_type:ident) => (
+        impl<'a> AutoDeallocateBuilder<'a, $wrapper_type<'a>> for MutAutoDeallocateObjectArrayBuilder<$sys_type> {
+            fn build<'b:'a>(&self, jvmti: &'b JVMTIEnv<'a>) -> Vec<$wrapper_type<'a>> {
+                if self.count == 0 || self.items.is_null() {
+                    return vec![];
+                }
+                let items = slice_raw(self.items, self.count);
+                let res: Vec<$wrapper_type<'a>> = items.iter()
+                    .map(|&e| (e).into())
+                    .collect();
+                match jvmti.deallocate_raw(self.items as *mut c_void as jmemory) {
+                    Err(e)=> error!("JVMTI deallocate memory fail {}",e),
+                    _=>{}
+                }
+                res
+            }
+        }
+    );
+    ($sys_type:ident, $wrapper_type:ident, $convert_type:ty) => (
+        impl<'a> AutoDeallocateBuilder<'a, $wrapper_type<'a>> for MutAutoDeallocateObjectArrayBuilder<$sys_type> {
+            fn build<'b:'a>(&self, jvmti: &'b JVMTIEnv<'a>) -> Vec<$wrapper_type<'a>> {
+                if self.count == 0 || self.items.is_null() {
+                    return vec![];
+                }
+                let items = slice_raw(self.items, self.count);
+                let res: Vec<$wrapper_type<'a>> = items.iter()
+                    .map(|&e| (e as $convert_type).into())
+                    .collect();
+                match jvmti.deallocate_raw(self.items as *mut c_void as jmemory) {
+                    Err(e)=> error!("JVMTI deallocate memory fail {}",e),
+                    _=>{}
+                }
+                res
+            }
+        }
+    )
+}
 
-define_builder!(jthread, JThreadID, jthread);
-define_builder!(jthreadGroup, JThreadGroupID, jthreadGroup);
-define_builder!(jmethodID, JMethodID, jmethodID);
-define_builder!(jfieldID, JFieldID, jfieldID);
-define_builder!(jclass, JClass, jclass);
-define_builder!(jvmtiLineNumberEntry, JLineNumberEntry, jvmtiLineNumberEntry);
+define_auto_deallocate_builder!(jobject, JObject);
+define_auto_deallocate_builder!(jvmtiMonitorStackDepthInfo, JMonitorStackDepthInfo);
+define_auto_deallocate_builder!(jvmtiParamInfo, JParamInfo);
+define_builder!(jvmtiFrameInfo, JFrameInfo);
+define_auto_deallocate_builder!(jvmtiStackInfo, JStackInfo);
+
+define_auto_deallocate_builder!(jthread, JThreadID, jthread);
+define_auto_deallocate_builder!(jthreadGroup, JThreadGroupID, jthreadGroup);
+define_auto_deallocate_builder!(jmethodID, JMethodID, jmethodID);
+define_auto_deallocate_builder!(jfieldID, JFieldID, jfieldID);
+define_auto_deallocate_builder!(jclass, JClass, jclass);
+define_auto_deallocate_builder!(jvmtiLineNumberEntry, JLineNumberEntry, jvmtiLineNumberEntry);
 
 impl<'a> Builder<JvmtiError> for MutObjectArrayBuilder<jvmtiError> {
     fn build(&self) -> Vec<JvmtiError> {
@@ -83,8 +124,44 @@ impl<'a> Builder<JCompiledMethodLoadRecordStackInfo<'a>> for MutObjectArrayBuild
     }
 }
 
-impl<'a> WithJvmtiEvnBuilder<JLocalVariableEntry<'a>> for MutObjectArrayBuilder<jvmtiLocalVariableEntry> {
-    fn build<'b>(&self, env: &JVMTIEnv<'b>) -> Vec<JLocalVariableEntry<'a>> {
+impl<'a> AutoDeallocateBuilder<'a, JExtensionFunctionInfo<'a>> for MutAutoDeallocateObjectArrayBuilder<jvmtiExtensionFunctionInfo> {
+    fn build<'b: 'a>(&self, jvmti: &'b JVMTIEnv<'a>) -> Vec<JExtensionFunctionInfo<'a>> {
+        if self.count == 0 || self.items.is_null() {
+            return vec![];
+        }
+        let items = slice_raw(self.items, self.count);
+        let res: Vec<JExtensionFunctionInfo<'a>> = items.iter()
+            .map(|&e| JExtensionFunctionInfo::new(e as jvmtiExtensionFunctionInfo, jvmti))
+            .collect();
+
+        match jvmti.deallocate_raw(self.items as *mut c_void as jmemory) {
+            Err(e) => error!("JVMTI deallocate memory fail {}", e),
+            _ => {}
+        }
+        res
+    }
+}
+
+impl<'a> AutoDeallocateBuilder<'a, JExtensionEventInfo<'a>> for MutAutoDeallocateObjectArrayBuilder<jvmtiExtensionEventInfo> {
+    fn build<'b: 'a>(&self, jvmti: &'b JVMTIEnv<'a>) -> Vec<JExtensionEventInfo<'a>> {
+        if self.count == 0 || self.items.is_null() {
+            return vec![];
+        }
+        let items = slice_raw(self.items, self.count);
+        let res: Vec<JExtensionEventInfo<'a>> = items.iter()
+            .map(|&e| JExtensionEventInfo::new(e as jvmtiExtensionEventInfo, jvmti))
+            .collect();
+
+        match jvmti.deallocate_raw(self.items as *mut c_void as jmemory) {
+            Err(e) => error!("JVMTI deallocate memory fail {}", e),
+            _ => {}
+        }
+        res
+    }
+}
+
+impl<'a> AutoDeallocateBuilder<'a, JLocalVariableEntry<'a>> for MutAutoDeallocateObjectArrayBuilder<jvmtiLocalVariableEntry> {
+    fn build<'b: 'a>(&self, jvmti: &'b JVMTIEnv<'a>) -> Vec<JLocalVariableEntry<'a>> {
         if self.count == 0 || self.items.is_null() {
             return vec![];
         }
@@ -92,9 +169,13 @@ impl<'a> WithJvmtiEvnBuilder<JLocalVariableEntry<'a>> for MutObjectArrayBuilder<
         let res: Vec<JLocalVariableEntry<'a>> = items.iter()
             .map(|&e| {
                 let entry = e as jvmtiLocalVariableEntry;
-                JLocalVariableEntry::new(env, &entry).unwrap()
+                JLocalVariableEntry::new(jvmti, &entry).unwrap()
             })
             .collect();
+        match jvmti.deallocate_raw(self.items as *mut c_void as jmemory) {
+            Err(e) => error!("JVMTI deallocate memory fail {}", e),
+            _ => {}
+        }
         res
     }
 }

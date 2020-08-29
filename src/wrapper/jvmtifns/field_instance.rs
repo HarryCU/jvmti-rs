@@ -1,7 +1,8 @@
 use std::ptr;
 
-use crate::{sys::*, objects::*, errors::*, JVMTIEnv, to_bool};
 use jni::strings::JNIString;
+
+use crate::{errors::*, JVMTIEnv, objects::*, sys::*, to_bool};
 
 impl<'a> JVMTIEnv<'a> {
     pub fn get_field_declaring_class_i<K, F, V>(&self, jni: &jni::JNIEnv<'a>, class: K, name: F, sig: V) -> Result<JObject>

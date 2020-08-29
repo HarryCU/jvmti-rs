@@ -1,6 +1,7 @@
 use std::ptr;
 
-use crate::{sys::*, errors::*, objects::*, JVMTIEnv, slice_raw};
+use crate::{errors::*, JVMTIEnv, objects::*, slice_raw, sys::*};
+use jni::sys::jobject;
 
 impl<'a> JVMTIEnv<'a> {
     pub fn get_tag(&self, object: &JObject) -> Result<jlong> {
@@ -46,6 +47,10 @@ impl<'a> JVMTIEnv<'a> {
             let t: jlong = tags[idx..idx + 1][0];
             jtag_objects.push(JTagObject::new(o, t))
         }
+
+        self.deallocate_raw(object_result as jmemory)?;
+        self.deallocate_raw(tag_result as jmemory)?;
+
         Ok(jtag_objects)
     }
 

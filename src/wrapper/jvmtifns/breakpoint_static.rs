@@ -1,6 +1,7 @@
-use crate::{objects::*, errors::*, JVMTIEnv, Transform};
-use crate::sys::jlocation;
 use jni::strings::JNIString;
+
+use crate::{errors::*, JVMTIEnv, objects::*, Transform};
+use crate::sys::jlocation;
 
 impl<'a> JVMTIEnv<'a> {
     pub fn set_breakpoint_s<K, M, V>(&self, jni: &jni::JNIEnv<'a>, class: K, name: M, sig: V, location: jlocation) -> Result<()>

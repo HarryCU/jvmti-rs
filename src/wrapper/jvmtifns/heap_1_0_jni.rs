@@ -1,6 +1,6 @@
 use std::ffi::c_void;
 
-use crate::{sys::*, objects::*, errors::*, JVMTIEnv, Transform};
+use crate::{errors::*, JVMTIEnv, objects::*, sys::*, Transform};
 
 impl<'a> JVMTIEnv<'a> {
     pub fn iterate_over_instances_of_class<K>(&self, jni: &jni::JNIEnv<'a>, class: K,

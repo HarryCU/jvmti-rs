@@ -23,7 +23,8 @@ make // TODO
 
 - [x] Simplify JVMTIEnv functions, learn & use design for jni-rs#descriptors 
 - [ ] Options: parse & design option struct
-- [ ] Check all functions to ensure that the memory is released correctly [jvmti docs](https://docs.oracle.com/javase/8/docs/platform/jvmti/jvmti.html#Deallocate) (keyword: The array should be freed with Deallocate.)
+- [x] Check all functions to ensure that the memory is released correctly [[jvmti docs]](https://docs.oracle.com/javase/8/docs/platform/jvmti/jvmti.html#Deallocate)
+    - [ ] `GetJNIFunctionTable: Untreated`
 - [ ] Rich test cases
 
 ## License

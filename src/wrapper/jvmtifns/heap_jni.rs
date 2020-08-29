@@ -1,6 +1,6 @@
 use std::ffi::c_void;
 
-use crate::{sys::*, errors::*, objects::*, JVMTIEnv,  Transform};
+use crate::{errors::*, JVMTIEnv, objects::*, sys::*, Transform};
 
 impl<'a> JVMTIEnv<'a> {
     pub fn follow_references<K>(&self, jni: &jni::JNIEnv<'a>, heap_filter: jint, class: K,

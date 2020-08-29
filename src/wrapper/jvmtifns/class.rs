@@ -1,25 +1,27 @@
-use crate::{sys::*, errors::*, builder::*, objects::*, JVMTIEnv};
+use jni::sys::jobject;
+use jni::sys::jclass;
+use crate::{builder::*, errors::*, JVMTIEnv, objects::*, sys::*};
 
 impl<'a> JVMTIEnv<'a> {
     pub fn get_loaded_classes(&self) -> Result<Vec<JClass>> {
-        let mut builder: MutObjectArrayBuilder<jclass> = MutObjectArrayBuilder::new();
+        let mut builder: MutAutoDeallocateObjectArrayBuilder<jclass> = MutAutoDeallocateObjectArrayBuilder::new();
         let res = jvmti_call_result!( self.jvmti_raw(), GetLoadedClasses,
             &mut builder.count,
             &mut builder.items
         );
         jvmti_error_code_to_result(res)?;
-        Ok(builder.build())
+        Ok(builder.build(self))
     }
 
     pub fn get_class_loader_classes(&self, initiating_loader: &JObject) -> Result<Vec<JClass>> {
-        let mut builder: MutObjectArrayBuilder<jclass> = MutObjectArrayBuilder::new();
+        let mut builder: MutAutoDeallocateObjectArrayBuilder<jclass> = MutAutoDeallocateObjectArrayBuilder::new();
         let res = jvmti_call_result!( self.jvmti_raw(), GetClassLoaderClasses,
             initiating_loader.into_inner(),
             &mut builder.count,
             &mut builder.items
         );
         jvmti_error_code_to_result(res)?;
-        Ok(builder.build())
+        Ok(builder.build(self))
     }
 
     pub fn retransform_classes(&self, classes: &Vec<JClass>) -> Result<()> {

@@ -1,6 +1,6 @@
 use std::ffi::c_void;
 
-use crate::{sys::*, objects::*, errors::*, JVMTIEnv};
+use crate::{errors::*, JVMTIEnv, objects::*, sys::*};
 
 impl<'a> JVMTIEnv<'a> {
     pub fn iterate_over_objects_reachable_from_object(&self, object: &JObject, callback: jvmtiObjectReferenceCallback, user_data: *const c_void) -> Result<()> {

@@ -1,6 +1,6 @@
 use std::ptr;
 
-use crate::{errors::*, objects::*, JVMTIEnv, JvmtiEventMode, JvmtiEvent};
+use crate::{errors::*, JVMTIEnv, JvmtiEvent, JvmtiEventMode, objects::*};
 use crate::sys::jvmtiEventCallbacks;
 
 impl<'a> JVMTIEnv<'a> {

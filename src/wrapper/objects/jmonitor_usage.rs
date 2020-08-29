@@ -1,4 +1,4 @@
-use crate::{objects::*, builder::*};
+use crate::{builder::*, JVMTIEnv, objects::*};
 use crate::sys;
 use crate::sys::jthread;
 
@@ -12,18 +12,18 @@ pub struct JMonitorUsage<'a> {
     pub notify_waiters: Vec<JThreadID<'a>>,
 }
 
-impl<'a> From<sys::jvmtiMonitorUsage> for JMonitorUsage<'a> {
-    fn from(usage: sys::jvmtiMonitorUsage) -> Self {
-        let waiters: MutObjectArrayBuilder<jthread> = MutObjectArrayBuilder::create(usage.waiter_count, usage.waiters);
-        let notify_waiters: MutObjectArrayBuilder<jthread> = MutObjectArrayBuilder::create(usage.notify_waiter_count, usage.notify_waiters);
+impl<'a> JMonitorUsage<'a> {
+    pub fn new<'b: 'a>(usage: sys::jvmtiMonitorUsage, jvmti: &'b JVMTIEnv<'a>) -> Self {
+        let waiters: MutAutoDeallocateObjectArrayBuilder<jthread> = MutAutoDeallocateObjectArrayBuilder::create(usage.waiter_count, usage.waiters);
+        let notify_waiters: MutAutoDeallocateObjectArrayBuilder<jthread> = MutAutoDeallocateObjectArrayBuilder::create(usage.notify_waiter_count, usage.notify_waiters);
 
         return JMonitorUsage {
             internal: usage,
 
             owner: usage.owner.into(),
             entry_count: usage.entry_count as u32,
-            waiters: waiters.build(),
-            notify_waiters: notify_waiters.build(),
+            waiters: waiters.build(jvmti),
+            notify_waiters: notify_waiters.build(jvmti),
         };
     }
 }

@@ -1,13 +1,18 @@
 use std::ptr;
-use crate::sys::jint;
+
 use crate::JVMTIEnv;
+use crate::sys::jint;
 
 pub trait Builder<T> {
     fn build<'a>(&self) -> Vec<T>;
 }
 
-pub trait WithJvmtiEvnBuilder<T> {
+pub trait WithJvmtiEnvBuilder<T> {
     fn build<'a>(&self, _: &JVMTIEnv<'a>) -> Vec<T>;
+}
+
+pub trait AutoDeallocateBuilder<'a, T> {
+    fn build<'b: 'a>(&self, _: &'b JVMTIEnv<'a>) -> Vec<T>;
 }
 
 pub struct MutObjectArrayBuilder<T> {
@@ -32,6 +37,34 @@ impl<T> MutObjectArrayBuilder<T> {
 
     pub fn create(count: jint, items_ptr: *mut T) -> MutObjectArrayBuilder<T> {
         MutObjectArrayBuilder {
+            count,
+            items: items_ptr,
+        }
+    }
+}
+
+pub struct MutAutoDeallocateObjectArrayBuilder<T> {
+    pub count: jint,
+    pub items: *mut T,
+}
+
+impl<T> MutAutoDeallocateObjectArrayBuilder<T> {
+    pub fn new() -> MutAutoDeallocateObjectArrayBuilder<T> {
+        MutAutoDeallocateObjectArrayBuilder {
+            count: 0 as jint,
+            items: ptr::null_mut(),
+        }
+    }
+
+    pub fn with_size(size: jint) -> MutAutoDeallocateObjectArrayBuilder<T> {
+        MutAutoDeallocateObjectArrayBuilder {
+            count: size,
+            items: ptr::null_mut(),
+        }
+    }
+
+    pub fn create(count: jint, items_ptr: *mut T) -> MutAutoDeallocateObjectArrayBuilder<T> {
+        MutAutoDeallocateObjectArrayBuilder {
             count,
             items: items_ptr,
         }

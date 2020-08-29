@@ -1,4 +1,4 @@
-use crate::{sys::*, objects::*, builder::*, JvmtiError, stringify};
+use crate::{builder::*, JVMTIEnv, JvmtiError, objects::*, stringify, sys::*};
 
 #[derive(Debug)]
 pub struct JExtensionFunctionInfo<'a> {
@@ -11,10 +11,10 @@ pub struct JExtensionFunctionInfo<'a> {
     pub errors: Vec<JvmtiError>,
 }
 
-impl<'a> From<jvmtiExtensionFunctionInfo> for JExtensionFunctionInfo<'a> {
-    fn from(info: jvmtiExtensionFunctionInfo) -> Self {
-        let params_builder: MutObjectArrayBuilder<jvmtiParamInfo> = MutObjectArrayBuilder::create(info.param_count, info.params);
-        let params: Vec<JParamInfo<'a>> = params_builder.build();
+impl<'a> JExtensionFunctionInfo<'a> {
+    pub fn new<'b: 'a>(info: jvmtiExtensionFunctionInfo, jvmti: &'b JVMTIEnv<'a>) -> JExtensionFunctionInfo<'a> {
+        let params_builder: MutAutoDeallocateObjectArrayBuilder<jvmtiParamInfo> = MutAutoDeallocateObjectArrayBuilder::create(info.param_count, info.params);
+        let params: Vec<JParamInfo<'a>> = params_builder.build(jvmti);
         let errors_builder: MutObjectArrayBuilder<jvmtiError> = MutObjectArrayBuilder::create(info.error_count, info.errors);
         let errors: Vec<JvmtiError> = errors_builder.build();
 

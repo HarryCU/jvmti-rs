@@ -3,7 +3,7 @@ use std::{
     ptr,
 };
 
-use crate::{sys::*, errors::*, objects::*, JVMTIEnv, JvmtiError, JvmtiVerboseFlag, JvmtiJlocationFormat, JvmtiPhase, to_jboolean};
+use crate::{errors::*, JVMTIEnv, JvmtiError, JvmtiJlocationFormat, JvmtiPhase, JvmtiVerboseFlag, objects::*, sys::*, to_jboolean};
 
 impl<'a> JVMTIEnv<'a> {
     pub fn dispose_environment(&self) -> Result<()> {
@@ -16,7 +16,7 @@ impl<'a> JVMTIEnv<'a> {
         ))
     }
 
-    pub fn get_error_name(&self, error: JvmtiError) -> Result<JvmtiString> {
+    pub fn get_error_name(&self, error: JvmtiError) -> Result<String> {
         let mut name = ptr::null_mut();
         let err: jvmtiError = error.into();
         let res = jvmti_call_result!(self.jvmti_raw(), GetErrorName,
@@ -24,7 +24,7 @@ impl<'a> JVMTIEnv<'a> {
             &mut name
         );
         jvmti_error_code_to_result(res)?;
-        self.build_string(name)
+        Ok(self.build_string(name)?.into())
     }
 
     pub fn get_environment_local_storage(&self) -> Result<JLocalStorage> {

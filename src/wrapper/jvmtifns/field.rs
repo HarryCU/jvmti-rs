@@ -1,7 +1,8 @@
 use std::ptr;
 
-use crate::{sys::*, objects::*, errors::*, JVMTIEnv, JSignature, JFieldName, to_bool, Desc, Transform};
 use jni::strings::JNIString;
+
+use crate::{Desc, errors::*, JFieldName, JSignature, JVMTIEnv, objects::*, sys::*, to_bool, Transform};
 
 impl<'a> JVMTIEnv<'a> {
     pub fn get_field_id<K, F, V>(&self, jni: &jni::JNIEnv<'a>, class: K, name: F, sig: V) -> Result<(JClass, JFieldID)>

@@ -1,5 +1,6 @@
 use std::marker::PhantomData;
-use crate::{sys::*, builder::*, JvmtiParamTypes, JvmtiParamKind, stringify, to_bool};
+
+use crate::{builder::*, JVMTIEnv, JvmtiParamKind, JvmtiParamTypes, stringify, sys::*, to_bool};
 
 #[derive(Debug)]
 pub struct JExtensionEventInfo<'a> {
@@ -11,10 +12,10 @@ pub struct JExtensionEventInfo<'a> {
     pub params: Vec<JParamInfo<'a>>,
 }
 
-impl<'a> From<jvmtiExtensionEventInfo> for JExtensionEventInfo<'a> {
-    fn from(info: jvmtiExtensionEventInfo) -> Self {
-        let builder: MutObjectArrayBuilder<jvmtiParamInfo> = MutObjectArrayBuilder::create(info.param_count, info.params);
-        let params: Vec<JParamInfo<'a>> = builder.build();
+impl<'a> JExtensionEventInfo<'a> {
+    pub fn new<'b: 'a>(info: jvmtiExtensionEventInfo, jvmti: &'b JVMTIEnv<'a>) -> Self {
+        let builder: MutAutoDeallocateObjectArrayBuilder<jvmtiParamInfo> = MutAutoDeallocateObjectArrayBuilder::create(info.param_count, info.params);
+        let params: Vec<JParamInfo<'a>> = builder.build(jvmti);
 
         JExtensionEventInfo {
             internal: info,

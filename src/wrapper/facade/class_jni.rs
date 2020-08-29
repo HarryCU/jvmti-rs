@@ -21,7 +21,7 @@ impl<'a> JVMTIFacadeEnv<'a> {
         self.jvmti_rust().get_class_status(self.jni_rust(), class)
     }
 
-    pub fn get_source_file_name<K>(&self, class: K) -> Result<JvmtiString>
+    pub fn get_source_file_name<K>(&self, class: K) -> Result<String>
         where
             K: Transform<'a, JClass<'a>> {
         self.jvmti_rust().get_source_file_name(self.jni_rust(), class)
@@ -69,7 +69,7 @@ impl<'a> JVMTIFacadeEnv<'a> {
         self.jvmti_rust().is_modifiable_class(self.jni_rust(), class)
     }
 
-    pub fn get_source_debug_extension<K>(&self, class: K) -> Result<JvmtiString>
+    pub fn get_source_debug_extension<K>(&self, class: K) -> Result<String>
         where
             K: Transform<'a, JClass<'a>> {
         self.jvmti_rust().get_source_debug_extension(self.jni_rust(), class)

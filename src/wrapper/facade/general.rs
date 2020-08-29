@@ -9,7 +9,7 @@ impl<'a> JVMTIFacadeEnv<'a> {
         self.jvmti_rust().get_version_number()
     }
 
-    pub fn get_error_name(&self, error: JvmtiError) -> Result<JvmtiString> {
+    pub fn get_error_name(&self, error: JvmtiError) -> Result<String> {
         self.jvmti_rust().get_error_name(error)
     }
 

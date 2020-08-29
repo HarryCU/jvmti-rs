@@ -1,7 +1,7 @@
 use crate::{
-    objects::*,
     errors::*,
     JVMTIEnv,
+    objects::*,
 };
 use crate::sys::jvmtiCapabilities;
 

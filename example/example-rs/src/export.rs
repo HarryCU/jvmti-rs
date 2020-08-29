@@ -1,14 +1,14 @@
-use std::os::raw::c_char;
-
-use jvmti::{sys, errors::*, objects::*, event::*, *};
-
-use std::panic;
-use log::{debug, warn, error};
 use std::ffi::c_void;
-use jni::JNIEnv;
-use jni_sys::jint;
+use std::os::raw::c_char;
+use std::panic;
 use std::string::String;
 use std::sync::Once;
+
+use jni::JNIEnv;
+use jni_sys::jint;
+use log::{debug, error, warn};
+
+use jvmti::{*, errors::*, event::*, sys};
 use jvmti::objects::JCompiledMethodLoadRecord;
 
 fn from_platform(_input: *const c_char) -> Result<Option<String>> {
@@ -70,6 +70,12 @@ fn method_entry(event: MethodEntryEvent) {
 
             let arg_size = event.jvmti.get_arguments_size_s("HelloWorld", "debug", "(Ljava/lang/Integer;)V").unwrap();
             debug!("get_arguments_size_s => {}", arg_size);
+
+            let all_threads = event.jvmti.get_all_threads().unwrap();
+            debug!("get_all_threads => {}", all_threads.len());
+
+            let _ = event.jvmti.get_jni().unwrap();
+            debug!("get_jni => complete.");
         });
         match result {
             Ok(_) => (),
@@ -124,17 +130,15 @@ static ONCE: Once = Once::new();
 
 fn class_load(event: ClassLoadEvent) {
     ONCE.call_once(|| {
-        jvmti_catch!(event, get_system_properties, {|items:&Vec<JvmtiString>| {
+        jvmti_catch!(event, get_system_properties, {|items:&Vec<String>| {
             debug!("class_load  => get_system_properties(): {}", items.len());
             for item in items.iter() {
-                let str: String = item.into();
-                debug!("class_load  => get_system_properties(): {}", str);
+                debug!("class_load  => get_system_properties(): {}", item);
             }
         }});
 
-        jvmti_catch!(event, get_system_property, {|e:&JvmtiString| {
-            let str: String = e.into();
-            debug!("class_load  => get_system_property(): {}", str);
+        jvmti_catch!(event, get_system_property, {|e:&String| {
+            debug!("class_load  => get_system_property(): {}", e);
         }}, "java.home");
 
         jvmti_catch!(event, get_jni, {|e:&JNIEnv| {

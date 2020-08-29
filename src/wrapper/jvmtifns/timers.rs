@@ -1,8 +1,8 @@
 use crate::{
-    sys::*,
     errors::*,
-    objects::*,
     JVMTIEnv,
+    objects::*,
+    sys::*,
 };
 
 impl<'a> JVMTIEnv<'a> {

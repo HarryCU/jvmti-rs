@@ -1,10 +1,10 @@
 use std::ptr;
 
 use crate::{
-    sys::*,
     errors::*,
-    objects::*,
     JVMTIEnv,
+    objects::*,
+    sys::*,
 };
 
 impl<'a> JVMTIEnv<'a> {
@@ -19,6 +19,12 @@ impl<'a> JVMTIEnv<'a> {
             return Ok(None);
         }
         Ok(Some(JMemoryAllocate::new(mem_ptr, size, &self)))
+    }
+
+    pub fn deallocate_raw(&self, memory: jmemory) -> Result<()> {
+        jvmti_call!(self.jvmti_raw(), Deallocate,
+           memory
+        );
     }
 
     pub fn deallocate<T>(&self, memory: &T) -> Result<()>

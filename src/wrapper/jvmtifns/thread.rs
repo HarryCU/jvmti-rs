@@ -2,8 +2,8 @@ use std::{
     ffi::c_void,
     ptr,
 };
-
-use crate::{sys::*, objects::*, builder::*, errors::*, JVMTIEnv, JThreadInfo, JvmtiThreadState, JvmtiError, JvmtiThreadPriority};
+use jni::sys::jobject;
+use crate::{builder::*, errors::*, JThreadInfo, JVMTIEnv, JvmtiError, JvmtiThreadPriority, JvmtiThreadState, objects::*, sys::*};
 
 impl<'a> JVMTIEnv<'a> {
     pub fn get_thread_state(&self, thread: &JThreadID) -> Result<JvmtiThreadState> {
@@ -29,13 +29,13 @@ impl<'a> JVMTIEnv<'a> {
     }
 
     pub fn get_all_threads(&self) -> Result<Vec<JThreadID>> {
-        let mut builder: MutObjectArrayBuilder<jthread> = MutObjectArrayBuilder::new();
+        let mut builder: MutAutoDeallocateObjectArrayBuilder<jthread> = MutAutoDeallocateObjectArrayBuilder::new();
         let res = jvmti_call_result!(self.jvmti_raw(), GetAllThreads,
             &mut builder.count,
             &mut builder.items
         );
         jvmti_error_code_to_result(res)?;
-        Ok(builder.build())
+        Ok(builder.build(self))
     }
 
     pub fn suspend_thread(&self, thread: &JThreadID) -> Result<()> {
@@ -100,25 +100,25 @@ impl<'a> JVMTIEnv<'a> {
     }
 
     pub fn get_owned_monitor_info(&self, thread: &JThreadID) -> Result<Vec<JObject>> {
-        let mut builder: MutObjectArrayBuilder<jobject> = MutObjectArrayBuilder::new();
+        let mut builder: MutAutoDeallocateObjectArrayBuilder<jobject> = MutAutoDeallocateObjectArrayBuilder::new();
         let res = jvmti_call_result!(self.jvmti_raw(), GetOwnedMonitorInfo,
             thread.into(),
             &mut builder.count,
             &mut builder.items
         );
         jvmti_error_code_to_result(res)?;
-        Ok(builder.build())
+        Ok(builder.build(self))
     }
 
     pub fn get_owned_monitor_stack_depth_info(&self, thread: &JThreadID) -> Result<Vec<JMonitorStackDepthInfo>> {
-        let mut builder: MutObjectArrayBuilder<jvmtiMonitorStackDepthInfo> = MutObjectArrayBuilder::new();
+        let mut builder: MutAutoDeallocateObjectArrayBuilder<jvmtiMonitorStackDepthInfo> = MutAutoDeallocateObjectArrayBuilder::new();
         let res = jvmti_call_result!( self.jvmti_raw(), GetOwnedMonitorStackDepthInfo,
             thread.into(),
             &mut builder.count,
             &mut builder.items
         );
         jvmti_error_code_to_result(res)?;
-        Ok(builder.build())
+        Ok(builder.build(self))
     }
 
     pub fn get_current_contended_monitor(&self, thread: &JThreadID) -> Result<Option<JObject>> {

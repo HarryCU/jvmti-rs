@@ -1,7 +1,9 @@
 use std::ptr;
 
-use crate::{sys::*, errors::*, builder::*, objects::*, JVMTIEnv, JSignature, JvmtiClassStatus, to_bool, Transform, Desc};
 use jni::strings::JNIString;
+use jni::sys::jobject;
+use jni::sys::jclass;
+use crate::{builder::*, Desc, errors::*, JSignature, JvmtiClassStatus, JVMTIEnv, objects::*, sys::*, to_bool, Transform};
 
 impl<'a> JVMTIEnv<'a> {
     pub fn get_class<S>(&self, jni: &jni::JNIEnv<'a>, name: S) -> Result<JClass>
@@ -40,7 +42,7 @@ impl<'a> JVMTIEnv<'a> {
         Ok((res as jvmtiClassStatus).into())
     }
 
-    pub fn get_source_file_name<K>(&self, jni: &jni::JNIEnv<'a>, class: K) -> Result<JvmtiString>
+    pub fn get_source_file_name<K>(&self, jni: &jni::JNIEnv<'a>, class: K) -> Result<String>
         where
             K: Transform<'a, JClass<'a>> {
         let klass: JClass = class.transform(jni)?;
@@ -51,7 +53,7 @@ impl<'a> JVMTIEnv<'a> {
             &mut source_name
         );
         jvmti_error_code_to_result(res)?;
-        self.build_string(source_name)
+        Ok(self.build_string(source_name)?.into())
     }
 
     pub fn get_class_modifiers<K>(&self, jni: &jni::JNIEnv<'a>, class: K) -> Result<jint>
@@ -70,14 +72,14 @@ impl<'a> JVMTIEnv<'a> {
             K: Transform<'a, JClass<'a>> {
         let klass: JClass = class.transform(jni)?;
 
-        let mut builder: MutObjectArrayBuilder<jmethodID> = MutObjectArrayBuilder::new();
+        let mut builder: MutAutoDeallocateObjectArrayBuilder<jmethodID> = MutAutoDeallocateObjectArrayBuilder::new();
         let res = jvmti_call_result!( self.jvmti_raw(), GetClassMethods,
             klass.into_inner(),
             &mut builder.count,
             &mut builder.items
         );
         jvmti_error_code_to_result(res)?;
-        Ok(builder.build())
+        Ok(builder.build(self))
     }
 
     pub fn get_class_fields<K>(&self, jni: &jni::JNIEnv<'a>, class: K) -> Result<Vec<JFieldID>>
@@ -85,14 +87,14 @@ impl<'a> JVMTIEnv<'a> {
             K: Transform<'a, JClass<'a>> {
         let klass: JClass = class.transform(jni)?;
 
-        let mut builder: MutObjectArrayBuilder<jfieldID> = MutObjectArrayBuilder::new();
+        let mut builder: MutAutoDeallocateObjectArrayBuilder<jfieldID> = MutAutoDeallocateObjectArrayBuilder::new();
         let res = jvmti_call_result!( self.jvmti_raw(), GetClassFields,
             klass.into_inner(),
             &mut builder.count,
             &mut builder.items
         );
         jvmti_error_code_to_result(res)?;
-        Ok(builder.build())
+        Ok(builder.build(self))
     }
 
     pub fn get_implemented_interfaces<K>(&self, jni: &jni::JNIEnv<'a>, class: K) -> Result<Vec<JClass>>
@@ -100,14 +102,14 @@ impl<'a> JVMTIEnv<'a> {
             K: Transform<'a, JClass<'a>> {
         let klass: JClass = class.transform(jni)?;
 
-        let mut builder: MutObjectArrayBuilder<jclass> = MutObjectArrayBuilder::new();
+        let mut builder: MutAutoDeallocateObjectArrayBuilder<jclass> = MutAutoDeallocateObjectArrayBuilder::new();
         let res = jvmti_call_result!( self.jvmti_raw(), GetImplementedInterfaces,
             klass.into_inner(),
             &mut builder.count,
             &mut builder.items
         );
         jvmti_error_code_to_result(res)?;
-        Ok(builder.build())
+        Ok(builder.build(self))
     }
 
     pub fn is_interface<K>(&self, jni: &jni::JNIEnv<'a>, class: K) -> Result<bool>
@@ -146,7 +148,7 @@ impl<'a> JVMTIEnv<'a> {
         Ok(to_bool(res))
     }
 
-    pub fn get_source_debug_extension<K>(&self, jni: &jni::JNIEnv<'a>, class: K) -> Result<JvmtiString>
+    pub fn get_source_debug_extension<K>(&self, jni: &jni::JNIEnv<'a>, class: K) -> Result<String>
         where
             K: Transform<'a, JClass<'a>> {
         let klass: JClass = class.transform(jni)?;
@@ -157,7 +159,7 @@ impl<'a> JVMTIEnv<'a> {
             &mut source_debug_extension
         );
         jvmti_error_code_to_result(res)?;
-        self.build_string(source_debug_extension)
+        Ok(self.build_string(source_debug_extension)?.into())
     }
 
     pub fn get_class_loader<K>(&self, jni: &jni::JNIEnv<'a>, class: K) -> Result<JClassLoader>

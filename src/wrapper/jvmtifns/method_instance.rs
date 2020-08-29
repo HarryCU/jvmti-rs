@@ -1,8 +1,9 @@
 use std::ptr;
 
-use crate::{sys::*, errors::*, builder::*, objects::*, JVMTIEnv, to_bool, Transform};
-use crate::sys;
 use jni::strings::JNIString;
+
+use crate::{builder::*, errors::*, JVMTIEnv, objects::*, sys::*, to_bool, Transform};
+use crate::sys;
 
 impl<'a> JVMTIEnv<'a> {
     pub fn get_method_declaring_class_i<K, M, V>(&self, jni: &jni::JNIEnv<'a>, class: K, name: M, sig: V) -> Result<JObject>
@@ -67,14 +68,14 @@ impl<'a> JVMTIEnv<'a> {
             V: Into<JNIString> {
         let method = self.get_method_id(jni, class, name, sig)?;
 
-        let mut builder: MutObjectArrayBuilder<jvmtiLineNumberEntry> = MutObjectArrayBuilder::new();
+        let mut builder: MutAutoDeallocateObjectArrayBuilder<jvmtiLineNumberEntry> = MutAutoDeallocateObjectArrayBuilder::new();
         let res = jvmti_call_result!( self.jvmti_raw(), GetLineNumberTable,
             method.into_inner(),
             &mut builder.count,
             &mut builder.items
         );
         jvmti_error_code_to_result(res)?;
-        Ok(builder.build())
+        Ok(builder.build(self))
     }
 
     pub fn get_method_location_i<K, M, V>(&self, jni: &jni::JNIEnv<'a>, class: K, name: M, sig: V) -> Result<JMethodLocation>
@@ -102,7 +103,7 @@ impl<'a> JVMTIEnv<'a> {
             V: Into<JNIString> {
         let method = self.get_method_id(jni, class, name, sig)?;
 
-        let mut builder: MutObjectArrayBuilder<jvmtiLocalVariableEntry> = MutObjectArrayBuilder::new();
+        let mut builder: MutAutoDeallocateObjectArrayBuilder<jvmtiLocalVariableEntry> = MutAutoDeallocateObjectArrayBuilder::new();
         let res = jvmti_call_result!( self.jvmti_raw(), GetLocalVariableTable,
             method.into_inner(),
             &mut builder.count,

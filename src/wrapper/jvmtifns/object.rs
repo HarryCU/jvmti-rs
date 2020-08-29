@@ -1,10 +1,10 @@
 use std::ptr;
 
 use crate::{
-    sys::*,
     errors::*,
-    objects::*,
     JVMTIEnv,
+    objects::*,
+    sys::*,
 };
 
 impl<'a> JVMTIEnv<'a> {
@@ -23,7 +23,7 @@ impl<'a> JVMTIEnv<'a> {
     }
 
     pub fn get_object_monitor_usage(&self, obj: &JObject) -> Result<JMonitorUsage> {
-        let mut into_ptr: jvmtiMonitorUsage = jvmtiMonitorUsage {
+        let mut usage: jvmtiMonitorUsage = jvmtiMonitorUsage {
             owner: ptr::null_mut(),
             entry_count: 0,
             waiter_count: 0,
@@ -33,11 +33,9 @@ impl<'a> JVMTIEnv<'a> {
         };
         let res = jvmti_call_result!(self.jvmti_raw(), GetObjectMonitorUsage,
             obj.into_inner(),
-            &mut into_ptr
+            &mut usage
         );
-
         jvmti_error_code_to_result(res)?;
-
-        Ok(into_ptr.into())
+        Ok(JMonitorUsage::new(usage, self))
     }
 }

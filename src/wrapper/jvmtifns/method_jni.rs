@@ -1,5 +1,6 @@
-use crate::{errors::*, objects::*, JVMTIEnv, Desc, Transform};
 use jni::strings::JNIString;
+
+use crate::{Desc, errors::*, JVMTIEnv, objects::*, Transform};
 
 impl<'a> JVMTIEnv<'a> {
     pub fn get_method_id<K, M, V>(&self, jni: &jni::JNIEnv<'a>, class: K, name: M, sig: V) -> Result<JMethodID>

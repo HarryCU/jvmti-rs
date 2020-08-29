@@ -1,6 +1,7 @@
-use crate::{objects::*, errors::*, JVMTIEnv, Transform, AdapterTransform};
 use jni::strings::JNIString;
 use jni_sys::jfieldID;
+
+use crate::{AdapterTransform, errors::*, JVMTIEnv, objects::*, Transform};
 
 impl<'a> JVMTIEnv<'a> {
     pub fn set_field_access_watch<K, F>(&self, jni: &jni::JNIEnv<'a>, class: K, field: F) -> Result<()>

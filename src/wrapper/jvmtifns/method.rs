@@ -1,9 +1,10 @@
+use std::os::raw::c_char;
 use std::ptr;
 
-use crate::{sys::*, errors::*, builder::*, objects::*, JVMTIEnv, JMethodName, JSignature, to_bool, AdapterTransform};
-use crate::sys;
 use jni::strings::JNIString;
-use std::os::raw::c_char;
+
+use crate::{AdapterTransform, builder::*, errors::*, JMethodName, JSignature, JVMTIEnv, objects::*, sys::*, to_bool};
+use crate::sys;
 
 impl<'a> JVMTIEnv<'a> {
     pub fn set_native_method_prefix<S>(&self, prefix: S) -> Result<()>
@@ -94,14 +95,14 @@ impl<'a> JVMTIEnv<'a> {
     pub fn get_line_number_table<M>(&self, method: M) -> Result<Vec<JLineNumberEntry>>
         where
             M: AdapterTransform<jmethodID> {
-        let mut builder: MutObjectArrayBuilder<jvmtiLineNumberEntry> = MutObjectArrayBuilder::new();
+        let mut builder: MutAutoDeallocateObjectArrayBuilder<jvmtiLineNumberEntry> = MutAutoDeallocateObjectArrayBuilder::new();
         let res = jvmti_call_result!( self.jvmti_raw(), GetLineNumberTable,
             method.transform(),
             &mut builder.count,
             &mut builder.items
         );
         jvmti_error_code_to_result(res)?;
-        Ok(builder.build())
+        Ok(builder.build(self))
     }
 
     pub fn get_method_location<M>(&self, method: M) -> Result<JMethodLocation>
@@ -121,7 +122,7 @@ impl<'a> JVMTIEnv<'a> {
     pub fn get_local_variable_table<M>(&self, method: M) -> Result<Vec<JLocalVariableEntry>>
         where
             M: AdapterTransform<jmethodID> {
-        let mut builder: MutObjectArrayBuilder<jvmtiLocalVariableEntry> = MutObjectArrayBuilder::new();
+        let mut builder: MutAutoDeallocateObjectArrayBuilder<jvmtiLocalVariableEntry> = MutAutoDeallocateObjectArrayBuilder::new();
         let res = jvmti_call_result!( self.jvmti_raw(), GetLocalVariableTable,
             method.transform(),
             &mut builder.count,
