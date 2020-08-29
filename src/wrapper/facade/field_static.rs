@@ -1,8 +1,8 @@
-use crate::{objects::*, errors::*, JVMTIEnvFacade};
+use crate::{objects::*, errors::*, JVMTIFacadeEnv};
 use jni::strings::JNIString;
 use crate::sys::jint;
 
-impl<'a> JVMTIEnvFacade<'a> {
+impl<'a> JVMTIFacadeEnv<'a> {
     pub fn get_field_declaring_class_s<K, F, V>(&self, class: K, name: F, sig: V) -> Result<JObject>
         where
             K: Into<JNIString>,

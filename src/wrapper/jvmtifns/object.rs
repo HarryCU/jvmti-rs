@@ -8,10 +8,10 @@ use crate::{
 };
 
 impl<'a> JVMTIEnv<'a> {
-    pub fn get_object_size(&self, object: &JObject) -> Result<jlong> {
+    pub fn get_object_size(&self, obj: &JObject) -> Result<jlong> {
         Ok(jvmti_call_number_result!(self.jvmti_raw(), jlong,
             GetObjectSize,
-            object.into_inner()
+            obj.into_inner()
         ))
     }
 

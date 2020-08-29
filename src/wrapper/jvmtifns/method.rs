@@ -1,6 +1,6 @@
 use std::ptr;
 
-use crate::{sys::*, errors::*, builder::*, objects::*, JVMTIEnv, JMethodName, JSignature, to_bool, Desc, Transform, AdapterTransform};
+use crate::{sys::*, errors::*, builder::*, objects::*, JVMTIEnv, JMethodName, JSignature, to_bool, AdapterTransform};
 use crate::sys;
 use jni::strings::JNIString;
 use std::os::raw::c_char;
@@ -173,23 +173,5 @@ impl<'a> JVMTIEnv<'a> {
             method.transform()
         );
         Ok(to_bool(res))
-    }
-
-    pub fn get_method_id<K, M, V>(&self, jni: &jni::JNIEnv<'a>, class: K, name: M, sig: V) -> Result<JMethodID>
-        where
-            K: Transform<'a, JClass<'a>>,
-            M: Into<JNIString>,
-            V: Into<JNIString> {
-        let klass: JClass = class.transform(jni)?;
-        (klass, name, sig).lookup(jni)
-    }
-
-    pub fn get_static_method_id<K, M, V>(&self, jni: &jni::JNIEnv<'a>, class: K, name: M, sig: V) -> Result<JStaticMethodID>
-        where
-            K: Transform<'a, JClass<'a>>,
-            M: Into<JNIString>,
-            V: Into<JNIString> {
-        let klass: JClass = class.transform(jni)?;
-        (klass, name, sig).lookup(jni)
     }
 }

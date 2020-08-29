@@ -1,8 +1,8 @@
-use crate::{errors::*, objects::*, Transform, JVMTIEnvFacade};
+use crate::{errors::*, objects::*, Transform, JVMTIFacadeEnv};
 use jni::strings::JNIString;
 use crate::sys::jint;
 
-impl<'a> JVMTIEnvFacade<'a> {
+impl<'a> JVMTIFacadeEnv<'a> {
     pub fn get_method_declaring_class_i<K, M, V>(&self, class: K, name: M, sig: V) -> Result<JObject>
         where
             K: Transform<'a, JClass<'a>>,

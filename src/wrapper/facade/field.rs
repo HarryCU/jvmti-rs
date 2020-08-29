@@ -1,7 +1,7 @@
-use crate::{sys::*, objects::*, errors::*, JFieldName, Transform, JVMTIEnvFacade};
+use crate::{sys::*, objects::*, errors::*, JFieldName, Transform, JVMTIFacadeEnv};
 use jni::strings::JNIString;
 
-impl<'a> JVMTIEnvFacade<'a> {
+impl<'a> JVMTIFacadeEnv<'a> {
     pub fn get_field_id<K, F, V>(&self, class: K, name: F, sig: V) -> Result<(JClass, JFieldID)>
         where
             K: Into<JNIString>,

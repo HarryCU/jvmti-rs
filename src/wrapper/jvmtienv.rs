@@ -12,7 +12,7 @@ pub struct JVMTIEnv<'a> {
     lifetime: PhantomData<&'a ()>,
 }
 
-pub struct JVMTIEnvFacade<'a> {
+pub struct JVMTIFacadeEnv<'a> {
     jvmti: &'a JVMTIEnv<'a>,
     jni: &'a JNIEnv<'a>,
 }
@@ -40,10 +40,10 @@ impl<'a> JVMTIEnv<'a> {
     }
 }
 
-impl<'a> JVMTIEnvFacade<'a> {
+impl<'a> JVMTIFacadeEnv<'a> {
     pub fn new<'b: 'a>(jvmti: &'b JVMTIEnv<'a>,
-                       jni: &'b JNIEnv<'a>, ) -> JVMTIEnvFacade<'a> {
-        JVMTIEnvFacade {
+                       jni: &'b JNIEnv<'a>, ) -> JVMTIFacadeEnv<'a> {
+        JVMTIFacadeEnv {
             jvmti,
             jni,
         }

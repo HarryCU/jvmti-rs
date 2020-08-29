@@ -21,11 +21,11 @@ impl<'a> JVMTIEnv<'a> {
         Ok(Some(JMemoryAllocate::new(mem_ptr, size, &self)))
     }
 
-    pub fn deallocate<T>(&self, str: &T) -> Result<()>
+    pub fn deallocate<T>(&self, memory: &T) -> Result<()>
         where
             T: JDeallocate<'a> {
         jvmti_call!(self.jvmti_raw(), Deallocate,
-           str.as_deallocate_ptr()
+           memory.as_deallocate_ptr()
         );
     }
 }

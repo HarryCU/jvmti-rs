@@ -1,21 +1,19 @@
-use std::ffi::c_void;
+use crate::{sys::*, errors::*, objects::*, JVMTIFacadeEnv};
 
-use crate::{sys::*, errors::*, objects::*, Transform, JVMTIEnvFacade};
-
-impl<'a> JVMTIEnvFacade<'a> {
-    pub fn follow_references<K>(&self, heap_filter: jint, class: K, initial_object: &JObject<'a>,
-                                callbacks: &Vec<jvmtiHeapCallbacks>,
-                                user_data: *const c_void) -> Result<()>
-        where
-            K: Transform<'a, JClass<'a>> {
-        self.jvmti_rust().follow_references(self.jni_rust(), heap_filter, class, initial_object, callbacks, user_data)
+impl<'a> JVMTIFacadeEnv<'a> {
+    pub fn get_tag(&self, object: &JObject) -> Result<jlong> {
+        self.jvmti_rust().get_tag(object)
     }
 
-    pub fn iterate_through_heap<K>(&self, heap_filter: jint, class: K,
-                                   callbacks: &Vec<jvmtiHeapCallbacks>,
-                                   user_data: *const c_void) -> Result<()>
-        where
-            K: Transform<'a, JClass<'a>> {
-        self.jvmti_rust().iterate_through_heap(self.jni_rust(), heap_filter, class, callbacks, user_data)
+    pub fn set_tag(&self, object: &JObject, tag: jlong) -> Result<()> {
+        self.jvmti_rust().set_tag(object, tag)
+    }
+
+    pub fn get_objects_with_tags(&self, tags: &Vec<jlong>) -> Result<Vec<JTagObject>> {
+        self.jvmti_rust().get_objects_with_tags(tags)
+    }
+
+    pub fn force_garbage_collection(&self) -> Result<()> {
+        self.jvmti_rust().force_garbage_collection()
     }
 }

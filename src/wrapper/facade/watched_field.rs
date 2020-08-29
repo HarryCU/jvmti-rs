@@ -1,8 +1,8 @@
-use crate::{objects::*, errors::*, Transform, AdapterTransform, JVMTIEnvFacade};
+use crate::{objects::*, errors::*, Transform, AdapterTransform, JVMTIFacadeEnv};
 use jni::strings::JNIString;
 use jni_sys::jfieldID;
 
-impl<'a> JVMTIEnvFacade<'a> {
+impl<'a> JVMTIFacadeEnv<'a> {
     pub fn set_field_access_watch<K, F>(&self, class: K, field: F) -> Result<()>
         where
             K: Transform<'a, JClass<'a>>,

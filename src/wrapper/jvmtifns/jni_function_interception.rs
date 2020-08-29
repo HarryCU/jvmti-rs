@@ -1,5 +1,5 @@
-use std::   ptr;
-use jni_sys::JNIEnv;
+use std::ptr;
+use jni::sys::JNIEnv;
 use crate::{
     errors::*,
     JVMTIEnv,

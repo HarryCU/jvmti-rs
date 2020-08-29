@@ -1,8 +1,8 @@
-use crate::{objects::*, errors::*, Transform, JVMTIEnvFacade};
+use crate::{objects::*, errors::*, Transform, JVMTIFacadeEnv};
 use crate::sys::jlocation;
 use jni::strings::JNIString;
 
-impl<'a> JVMTIEnvFacade<'a> {
+impl<'a> JVMTIFacadeEnv<'a> {
     pub fn set_breakpoint_s<K, M, V>(&self, class: K, name: M, sig: V, location: jlocation) -> Result<()>
         where
             K: Transform<'a, JClass<'a>>,

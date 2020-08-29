@@ -58,18 +58,17 @@ pub extern "C" fn Agent_OnLoad(vm: *mut sys::JavaVM, options: *const c_char, res
 fn method_entry(event: MethodEntryEvent) {
     let method_name = event.jvmti.get_method_name(event.method).unwrap();
 
-
     if method_name.name == "debug" {
         debug!("method_entry => {:?}", method_name);
 
         let result = panic::catch_unwind(|| {
-            let klass = event.jvmti.get_class(event.jni, "HelloWorld").unwrap();
+            let klass = event.jvmti.get_class("HelloWorld").unwrap();
             debug!("get_class => {:?}", klass);
 
-            let method = event.jvmti_facade.get_static_method_id(klass, "debug", "(Ljava/lang/Integer;)V").unwrap();
+            let method = event.jvmti.get_static_method_id(klass, "debug", "(Ljava/lang/Integer;)V").unwrap();
             debug!("get_static_method_id => {:?}", method.into_inner());
 
-            let arg_size = event.jvmti_facade.get_arguments_size_s("HelloWorld", "debug", "(Ljava/lang/Integer;)V").unwrap();
+            let arg_size = event.jvmti.get_arguments_size_s("HelloWorld", "debug", "(Ljava/lang/Integer;)V").unwrap();
             debug!("get_arguments_size_s => {}", arg_size);
         });
         match result {

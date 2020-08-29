@@ -1,4 +1,3 @@
-#[macro_use]
 extern crate jvmti;
 extern crate jni;
 extern crate jni_sys;

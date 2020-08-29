@@ -1,6 +1,6 @@
 use std::ffi::c_void;
 
-use crate::{sys::*, objects::*, errors::*, JVMTIEnv, Transform};
+use crate::{sys::*, objects::*, errors::*, JVMTIEnv};
 
 impl<'a> JVMTIEnv<'a> {
     pub fn iterate_over_objects_reachable_from_object(&self, object: &JObject, callback: jvmtiObjectReferenceCallback, user_data: *const c_void) -> Result<()> {
@@ -29,23 +29,6 @@ impl<'a> JVMTIEnv<'a> {
                              user_data: *const c_void,
     ) -> Result<()> {
         jvmti_call!(self.jvmti_raw(), IterateOverHeap,
-            object_filter,
-            heap_object_callback,
-            user_data
-        )
-    }
-
-    pub fn iterate_over_instances_of_class<K>(&self, jni: &jni::JNIEnv<'a>, class: K,
-                                              object_filter: jvmtiHeapObjectFilter,
-                                              heap_object_callback: jvmtiHeapObjectCallback,
-                                              user_data: *const c_void,
-    ) -> Result<()>
-        where
-            K: Transform<'a, JClass<'a>>, {
-        let klass = class.transform(jni)?;
-
-        jvmti_call!(self.jvmti_raw(), IterateOverInstancesOfClass,
-            klass.into_inner(),
             object_filter,
             heap_object_callback,
             user_data

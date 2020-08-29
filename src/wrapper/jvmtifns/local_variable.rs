@@ -20,11 +20,11 @@ impl<'a> JVMTIEnv<'a> {
         Ok(Some(res.into()))
     }
 
-    pub fn get_local_object(&self, thread: &JThreadID, dept: jint, slot: jint) -> Result<Option<JObject>> {
+    pub fn get_local_object(&self, thread: &JThreadID, depth: jint, slot: jint) -> Result<Option<JObject>> {
         let res = jvmti_call_ptr_result!(self.jvmti_raw(), jobject,
             GetLocalObject,
             thread.into(),
-            dept,
+            depth,
             slot
         );
         if res.is_null() {
@@ -33,82 +33,82 @@ impl<'a> JVMTIEnv<'a> {
         Ok(Some(res.into()))
     }
 
-    pub fn get_local_int(&self, thread: &JThreadID, dept: jint, slot: jint) -> Result<jint> {
+    pub fn get_local_int(&self, thread: &JThreadID, depth: jint, slot: jint) -> Result<jint> {
         Ok(jvmti_call_number_result!(self.jvmti_raw(), jint,
             GetLocalInt,
             thread.into(),
-            dept,
+            depth,
             slot
         ))
     }
 
-    pub fn get_local_long(&self, thread: &JThreadID, dept: jint, slot: jint) -> Result<jlong> {
+    pub fn get_local_long(&self, thread: &JThreadID, depth: jint, slot: jint) -> Result<jlong> {
         Ok(jvmti_call_number_result!(self.jvmti_raw(), jlong,
             GetLocalLong,
             thread.into(),
-            dept,
+            depth,
             slot
        ))
     }
 
-    pub fn get_local_float(&self, thread: &JThreadID, dept: jint, slot: jint) -> Result<jfloat> {
+    pub fn get_local_float(&self, thread: &JThreadID, depth: jint, slot: jint) -> Result<jfloat> {
         Ok(jvmti_call_number_result!(self.jvmti_raw(), jfloat,
             GetLocalFloat,
             thread.into(),
-            dept,
+            depth,
             slot
        ))
     }
 
-    pub fn get_local_double(&self, thread: &JThreadID, dept: jint, slot: jint) -> Result<jdouble> {
+    pub fn get_local_double(&self, thread: &JThreadID, depth: jint, slot: jint) -> Result<jdouble> {
         Ok(jvmti_call_number_result!(self.jvmti_raw(), jdouble,
             GetLocalDouble,
             thread.into(),
-            dept,
+            depth,
             slot
        ))
     }
 
-    pub fn set_local_object(&self, thread: &JThreadID, dept: jint, slot: jint, obj: &Option<JObject>) -> Result<()> {
+    pub fn set_local_object(&self, thread: &JThreadID, depth: jint, slot: jint, obj: &Option<JObject>) -> Result<()> {
         jvmti_call!(self.jvmti_raw(), SetLocalObject,
             thread.into(),
-            dept,
+            depth,
             slot,
             obj.map_or_else(|| ptr::null_mut(), |e| e.into_inner())
         )
     }
 
-    pub fn set_local_int(&self, thread: &JThreadID, dept: jint, slot: jint, value: jint) -> Result<()> {
+    pub fn set_local_int(&self, thread: &JThreadID, depth: jint, slot: jint, value: jint) -> Result<()> {
         jvmti_call!(self.jvmti_raw(), SetLocalInt,
             thread.into(),
-            dept,
+            depth,
             slot,
             value
         )
     }
 
-    pub fn set_local_long(&self, thread: &JThreadID, dept: jint, slot: jint, value: jlong) -> Result<()> {
+    pub fn set_local_long(&self, thread: &JThreadID, depth: jint, slot: jint, value: jlong) -> Result<()> {
         jvmti_call!(self.jvmti_raw(), SetLocalLong,
             thread.into(),
-            dept,
+            depth,
             slot,
             value
         )
     }
 
-    pub fn set_local_float(&self, thread: &JThreadID, dept: jint, slot: jint, value: jfloat) -> Result<()> {
+    pub fn set_local_float(&self, thread: &JThreadID, depth: jint, slot: jint, value: jfloat) -> Result<()> {
         jvmti_call!(self.jvmti_raw(), SetLocalFloat,
             thread.into(),
-            dept,
+            depth,
             slot,
             value
         )
     }
 
-    pub fn set_local_double(&self, thread: &JThreadID, dept: jint, slot: jint, value: jdouble) -> Result<()> {
+    pub fn set_local_double(&self, thread: &JThreadID, depth: jint, slot: jint, value: jdouble) -> Result<()> {
         jvmti_call!(self.jvmti_raw(), SetLocalDouble,
             thread.into(),
-            dept,
+            depth,
             slot,
             value
         )

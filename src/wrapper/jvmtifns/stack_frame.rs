@@ -57,7 +57,7 @@ impl<'a> JVMTIEnv<'a> {
         ))
     }
 
-    pub fn get_frame_location(&self, thread: &JThreadID, dept: jint) -> Result<Option<JFrameInfo>> {
+    pub fn get_frame_location(&self, thread: &JThreadID, depth: jint) -> Result<Option<JFrameInfo>> {
         let mut info: jvmtiFrameInfo = jvmtiFrameInfo {
             method: ptr::null_mut(),
             location: 0,
@@ -65,7 +65,7 @@ impl<'a> JVMTIEnv<'a> {
 
         let res = jvmti_call_result!(self.jvmti_raw(), GetFrameLocation,
             thread.into(),
-            dept,
+            depth,
             &mut info.method,
             &mut info.location
         );
@@ -84,10 +84,10 @@ impl<'a> JVMTIEnv<'a> {
         )
     }
 
-    pub fn notify_frame_pop(&self, thread: &JThreadID, dept: jint) -> Result<()> {
+    pub fn notify_frame_pop(&self, thread: &JThreadID, depth: jint) -> Result<()> {
         jvmti_call!(self.jvmti_raw(), NotifyFramePop,
             thread.into(),
-            dept
+            depth
         )
     }
 }

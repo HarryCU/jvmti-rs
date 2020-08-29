@@ -1,7 +1,7 @@
-use crate::{errors::*, Transform, JVMTIEnvFacade};
+use crate::{errors::*, Transform, JVMTIFacadeEnv};
 use crate::sys::{jlocation, jmethodID};
 
-impl<'a> JVMTIEnvFacade<'a> {
+impl<'a> JVMTIFacadeEnv<'a> {
     pub fn set_breakpoint<M>(&self, method: M, location: jlocation) -> Result<()>
         where
             M: Transform<'a, jmethodID> {
