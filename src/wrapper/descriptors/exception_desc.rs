@@ -29,7 +29,7 @@ impl<'a> Desc<'a, JThrowable<'a>> for Exception {
     }
 }
 
-impl<'a, 'b> Desc<'a, JThrowable<'a>> for &'b str {
+impl<'a> Desc<'a, JThrowable<'a>> for &'a str {
     //noinspection DuplicatedCode
     fn lookup(self, jni: &JNIEnv<'a>) -> Result<JThrowable<'a>> {
         let class: JClass = DEFAULT_EXCEPTION_CLASS.lookup(jni)?;
@@ -45,7 +45,7 @@ impl<'a> Desc<'a, JThrowable<'a>> for String {
     }
 }
 
-impl<'a, 'b> Desc<'a, JThrowable<'a>> for JNIString {
+impl<'a> Desc<'a, JThrowable<'a>> for JNIString {
     //noinspection DuplicatedCode
     fn lookup(self, jni: &JNIEnv<'a>) -> Result<JThrowable<'a>> {
         let class: JClass = DEFAULT_EXCEPTION_CLASS.lookup(jni)?;

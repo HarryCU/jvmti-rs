@@ -32,54 +32,54 @@ pub use thread_group::*;
 pub use timers::*;
 pub use watched_field::*;
 
-mod memory_management;
-mod thread;
-mod general;
-mod event_management;
-mod system_properties;
-mod class_loader_search;
-mod timers;
-mod capability;
-mod extension_mechanism;
-mod jni_function_interception;
-mod raw_monitor;
 mod breakpoint;
-mod breakpoint_static;
 mod breakpoint_instance;
+mod breakpoint_static;
+mod capability;
 mod class;
 mod class_jni;
+mod class_loader_search;
+mod event_management;
+mod extension_mechanism;
 mod field;
 mod field_instance;
 mod field_static;
 mod force_early_return;
+mod general;
 mod heap;
-mod heap_jni;
 mod heap_1_0;
+mod heap_1_0_jni;
+mod heap_jni;
+mod jni_function_interception;
 mod local_variable;
+mod memory_management;
 mod method;
-mod method_jni;
 mod method_instance;
+mod method_jni;
 mod method_static;
 mod object;
-mod thread_group;
-mod watched_field;
+mod raw_monitor;
 mod stack_frame;
-mod heap_1_0_jni;
+mod system_properties;
+mod thread;
+mod thread_group;
+mod timers;
+mod watched_field;
 
 #[macro_export]
 macro_rules! jvmti_catch {
-    ($event:expr, $name:tt, $callback:block) => {
+    ($jvmti:expr, $name:tt, |$e:ident:$type:ty| $callback:block) => {
         debug!("looking up JVMTIEnv method {}", stringify!($name));
-        let call = $callback;
-        match &$event.jvmti.$name() {
+        let call = |$e:$type| $callback;
+        match &$jvmti.$name() {
             Ok(val) => call(val),
             Err(e) => error!("call jvmti an exception occurs: {}", e)
         }
     };
-    ($event:expr, $name:tt, $callback:block $(, $args:expr )* ) => {
+    ($jvmti:expr, $name:tt, |$e:ident:$type:ty| $callback:block $(, $args:expr )* ) => {
         debug!("looking up JVMTIEnv method {}", stringify!($name));
-        let call = $callback;
-        match &$event.jvmti.$name($($args),*,) {
+        let call = |$e:$type| $callback;
+        match &$jvmti.$name($($args),*,) {
             Ok(val) => call(val),
             Err(e) => error!("call jvmti an exception occurs: {}", e)
         }

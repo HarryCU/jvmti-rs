@@ -3,7 +3,7 @@ use jni::strings::JNIString;
 use crate::{errors::*, objects::JClass};
 use jni::JNIEnv;
 
-impl<'a, 'b> Transform<'a, JClass<'a>> for &'b str {
+impl<'a> Transform<'a, JClass<'a>> for &'a str {
     fn transform(self, jni: &JNIEnv<'a>) -> Result<JClass<'a>> {
         jni.find_class(self)
             .map_err(jni_lookup_error)

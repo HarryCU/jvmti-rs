@@ -39,7 +39,7 @@ macro_rules! define_builder {
 macro_rules! define_auto_deallocate_builder {
     ($sys_type:ident, $wrapper_type:ident) => (
         impl<'a> AutoDeallocateBuilder<'a, $wrapper_type<'a>> for MutAutoDeallocateObjectArrayBuilder<$sys_type> {
-            fn build<'b:'a>(&self, jvmti: &'b JVMTIEnv<'a>) -> Vec<$wrapper_type<'a>> {
+            fn build(&self, jvmti: &'a JVMTIEnv<'a>) -> Vec<$wrapper_type<'a>> {
                 if self.count == 0 || self.items.is_null() {
                     return vec![];
                 }
@@ -57,7 +57,7 @@ macro_rules! define_auto_deallocate_builder {
     );
     ($sys_type:ident, $wrapper_type:ident, $convert_type:ty) => (
         impl<'a> AutoDeallocateBuilder<'a, $wrapper_type<'a>> for MutAutoDeallocateObjectArrayBuilder<$sys_type> {
-            fn build<'b:'a>(&self, jvmti: &'b JVMTIEnv<'a>) -> Vec<$wrapper_type<'a>> {
+            fn build(&self, jvmti: &'a JVMTIEnv<'a>) -> Vec<$wrapper_type<'a>> {
                 if self.count == 0 || self.items.is_null() {
                     return vec![];
                 }
@@ -125,7 +125,7 @@ impl<'a> Builder<JCompiledMethodLoadRecordStackInfo<'a>> for MutObjectArrayBuild
 }
 
 impl<'a> AutoDeallocateBuilder<'a, JExtensionFunctionInfo<'a>> for MutAutoDeallocateObjectArrayBuilder<jvmtiExtensionFunctionInfo> {
-    fn build<'b: 'a>(&self, jvmti: &'b JVMTIEnv<'a>) -> Vec<JExtensionFunctionInfo<'a>> {
+    fn build(&self, jvmti: &'a JVMTIEnv<'a>) -> Vec<JExtensionFunctionInfo<'a>> {
         if self.count == 0 || self.items.is_null() {
             return vec![];
         }
@@ -143,7 +143,7 @@ impl<'a> AutoDeallocateBuilder<'a, JExtensionFunctionInfo<'a>> for MutAutoDeallo
 }
 
 impl<'a> AutoDeallocateBuilder<'a, JExtensionEventInfo<'a>> for MutAutoDeallocateObjectArrayBuilder<jvmtiExtensionEventInfo> {
-    fn build<'b: 'a>(&self, jvmti: &'b JVMTIEnv<'a>) -> Vec<JExtensionEventInfo<'a>> {
+    fn build(&self, jvmti: &'a JVMTIEnv<'a>) -> Vec<JExtensionEventInfo<'a>> {
         if self.count == 0 || self.items.is_null() {
             return vec![];
         }
@@ -161,7 +161,7 @@ impl<'a> AutoDeallocateBuilder<'a, JExtensionEventInfo<'a>> for MutAutoDeallocat
 }
 
 impl<'a> AutoDeallocateBuilder<'a, JLocalVariableEntry<'a>> for MutAutoDeallocateObjectArrayBuilder<jvmtiLocalVariableEntry> {
-    fn build<'b: 'a>(&self, jvmti: &'b JVMTIEnv<'a>) -> Vec<JLocalVariableEntry<'a>> {
+    fn build(&self, jvmti: &'a JVMTIEnv<'a>) -> Vec<JLocalVariableEntry<'a>> {
         if self.count == 0 || self.items.is_null() {
             return vec![];
         }

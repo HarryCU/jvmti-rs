@@ -8,17 +8,20 @@ use jni::JNIEnv;
 use jni_sys::jint;
 use log::{debug, error, warn};
 
-use jvmti::{*, event::*, sys};
-use jvmti::objects::JCompiledMethodLoadRecord;
+use jvmti::objects::{JCompiledMethodLoadRecord, JStaticMethodID};
+use jvmti::{event::*, sys, *};
 
 #[allow(non_snake_case)]
 #[allow(unused_variables)]
 #[no_mangle]
-pub extern "C" fn Agent_OnLoad(vm: *mut sys::JavaVM, options: *const c_char, reserved: *const c_void) -> sys::jint {
+pub extern "C" fn Agent_OnLoad(
+    vm: *mut sys::JavaVM,
+    options: *const c_char,
+    reserved: *const c_void,
+) -> sys::jint {
     debug!("Agent 'on load'");
-    let log_init_result = panic::catch_unwind(|| {
-        log4rs::init_file("log.yaml", Default::default()).unwrap()
-    });
+    let log_init_result =
+        panic::catch_unwind(|| log4rs::init_file("log.yaml", Default::default()).unwrap());
     match log_init_result {
         Ok(r) => {}
         Err(e) => {
@@ -28,8 +31,6 @@ pub extern "C" fn Agent_OnLoad(vm: *mut sys::JavaVM, options: *const c_char, res
     }
 
     let result = panic::catch_unwind(|| {
-        debug!("Agent 'on load'");
-
         let javaVM = java_vm!(vm);
         jvmti::agent_on_load(&javaVM, options, initialize)
     });
@@ -43,7 +44,9 @@ pub extern "C" fn Agent_OnLoad(vm: *mut sys::JavaVM, options: *const c_char, res
 }
 
 fn initialize(_options: *const c_char, event_manager: &mut JEventManager) {
-    event_manager.get_capabilities().can_generate_all_class_hook_events();
+    event_manager
+        .get_capabilities()
+        .can_generate_all_class_hook_events();
     event_manager.get_capabilities().can_tag_objects();
     event_manager.get_capabilities().can_get_source_file_name();
     event_manager.get_capabilities().can_get_line_numbers();
@@ -79,10 +82,21 @@ fn method_entry(event: MethodEntryEvent) {
             let klass = event.jvmti.get_class("HelloWorld").unwrap();
             debug!("get_class => {:?}", klass);
 
-            let method = event.jvmti.get_static_method_id(klass, "debug", "(Ljava/lang/Integer;)V").unwrap();
-            debug!("get_static_method_id => {:?}", method.into_inner());
+            jvmti_catch!(
+                event.jvmti,
+                get_static_method_id,
+                |e: &JStaticMethodID| {
+                    debug!("get_static_method_id => {:?}", e.into_inner());
+                },
+                klass,
+                "debug",
+                "(Ljava/lang/Integer;)V"
+            );
 
-            let arg_size = event.jvmti.get_arguments_size_s("HelloWorld", "debug", "(Ljava/lang/Integer;)V").unwrap();
+            let arg_size = event
+                .jvmti
+                .get_arguments_size_s("HelloWorld", "debug", "(Ljava/lang/Integer;)V")
+                .unwrap();
             debug!("get_arguments_size_s => {}", arg_size);
 
             let all_threads = event.jvmti.get_all_threads().unwrap();
@@ -106,9 +120,9 @@ fn class_prepare(event: ClassPrepareEvent) {
 
 fn vm_start(event: VmStartEvent) {
     debug!("vm_start");
-    jvmti_catch!(event, get_version_number, {|e:&jint| {
+    jvmti_catch!(event.jvmti, get_version_number, |e: &jint| {
         debug!("vm_start  => get_version_number(): {}", e)
-    }});
+    });
 }
 
 fn dynamic_code_generated(event: DynamicCodeGeneratedEvent) {
@@ -125,7 +139,10 @@ fn compiled_method_load(event: CompiledMethodLoadEvent) {
                 for info in infos.iter() {
                     match info {
                         &JCompiledMethodLoadRecord::Inline { ref stack_infos } => {
-                            debug!("compiled_method_load => compiled_records.stack_infos: {}", stack_infos.len());
+                            debug!(
+                                "compiled_method_load => compiled_records.stack_infos: {}",
+                                stack_infos.len()
+                            );
                         }
                         _ => {}
                     }
@@ -144,33 +161,44 @@ static ONCE: Once = Once::new();
 
 fn class_load(event: ClassLoadEvent) {
     ONCE.call_once(|| {
-        jvmti_catch!(event, get_system_properties, {|items:&Vec<String>| {
+        jvmti_catch!(event.jvmti, get_system_properties, |items: &Vec<String>| {
             debug!("class_load  => get_system_properties(): {}", items.len());
             for item in items.iter() {
                 debug!("class_load  => get_system_properties(): {}", item);
             }
-        }});
+        });
 
-        jvmti_catch!(event, get_system_property, {|e:&String| {
-            debug!("class_load  => get_system_property(): {}", e);
-        }}, "java.home");
+        jvmti_catch!(
+            event.jvmti,
+            get_system_property,
+            |e: &String| {
+                debug!("class_load  => get_system_property(): {}", e);
+            },
+            "java.home"
+        );
 
-        jvmti_catch!(event, get_jni, {|e:&JNIEnv| {
+        jvmti_catch!(event.jvmti, get_jni, |e: &JNIEnv| {
             match e.get_version() {
                 Ok(v) => debug!("class_load  => get_jni().get_version(): {:?}", v),
-                Err(e) => error!("class_load  => get_jni().get_version(): {}", e)
+                Err(e) => error!("class_load  => get_jni().get_version(): {}", e),
             }
-        }});
+        });
     })
 }
 
 fn exception(event: ExceptionEvent) {
     let method_name = event.jvmti.get_method_name(event.method).unwrap();
-    debug!("exception => {:?}, {:?}, {:?}, {}", event.thread, event.method, method_name, event.location)
+    debug!(
+        "exception => {:?}, {:?}, {:?}, {}",
+        event.thread, event.method, method_name, event.location
+    )
 }
 
 fn exception_catch(event: ExceptionCatchEvent) {
-    debug!("exception_catch => {:?}, {:?}, {}, {:?}", event.thread, event.method, event.location, event.exception)
+    debug!(
+        "exception_catch => {:?}, {:?}, {}, {:?}",
+        event.thread, event.method, event.location, event.exception
+    )
 }
 
 #[allow(non_snake_case)]

@@ -1,9 +1,10 @@
 use std::marker::PhantomData;
 use std::os::raw::c_char;
 
-use crate::sys;
-use crate::{errors::*, objects::*};
 use jni::JNIEnv;
+
+use crate::{errors::*, objects::*};
+use crate::sys;
 
 #[derive(Clone)]
 #[repr(transparent)]

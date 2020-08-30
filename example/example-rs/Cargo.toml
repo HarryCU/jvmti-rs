@@ -18,7 +18,7 @@ jni = "0.17.0"
 jni-sys = "0.3.0"
 jvmti = { path = "../../" }
 log = "0.4.11"
-log4rs = "0.13.0"
+log4rs = "1.0.0-alpha-1"
 
 [lib]
 name = "libjvmti_example"

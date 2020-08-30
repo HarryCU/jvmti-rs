@@ -4,15 +4,15 @@ use crate::JVMTIEnv;
 use crate::sys::jint;
 
 pub trait Builder<T> {
-    fn build<'a>(&self) -> Vec<T>;
+    fn build(&self) -> Vec<T>;
 }
 
-pub trait WithJvmtiEnvBuilder<T> {
-    fn build<'a>(&self, _: &JVMTIEnv<'a>) -> Vec<T>;
+pub trait WithJvmtiEnvBuilder<'a, T> {
+    fn build(&self, _: &'a JVMTIEnv<'a>) -> Vec<T>;
 }
 
 pub trait AutoDeallocateBuilder<'a, T> {
-    fn build<'b: 'a>(&self, _: &'b JVMTIEnv<'a>) -> Vec<T>;
+    fn build(&self, _: &'a JVMTIEnv<'a>) -> Vec<T>;
 }
 
 pub struct MutObjectArrayBuilder<T> {
